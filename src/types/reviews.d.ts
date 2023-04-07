@@ -1,8 +1,8 @@
 
 type Review = {
     id: number,
-    film: Film,
-    user: User,
+    film: number,
+    user: number,
     rating: number,
     review: string,
     timeStamp: Date

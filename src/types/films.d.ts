@@ -1,13 +1,13 @@
-import {Image} from "./images";
-
-
-type Film = {
-    id: number,
+export type Film = {
+    filmId: number,
     title: number,
-    description: number,
-    release_date: Date,
-    image: Image,
-    director: User,
-    genre: Genre,
-    age_rating: string
+    description: string,
+    releaseDate: string,
+    directorId: number,
+    directorFirstName: string,
+    directorLastName: string,
+
+    rating: number
+    genreId: Number,
+    ageRating: string
 }

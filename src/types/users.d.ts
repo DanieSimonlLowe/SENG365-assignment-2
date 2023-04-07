@@ -1,4 +1,4 @@
-import {Image} from "./images"
+import {Image} from "../classes/images"
 
 type User = {
     id: number,
