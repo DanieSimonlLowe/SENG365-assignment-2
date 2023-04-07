@@ -10,11 +10,13 @@ import {Genre} from "../types/genres";
 import {useParams} from "react-router-dom";
 import {API_URL} from "../Constantes";
 
-type GenreFilter = {
+type Filter = {
     name: string,
     id: number,
     active: boolean
 }
+
+const AGE_RATINGS = ["G","PG","M","R13","R16","R18","TBC"]
 
 const FilmList = () => {
 
@@ -50,7 +52,17 @@ const FilmList = () => {
 
     const [noFilms, setNoFilms] = React.useState(true);
 
-    const [genreFilters, setGenreFilters] = React.useState<Array<GenreFilter>>([]);
+    const [genreFilters, setGenreFilters] = React.useState<Array<Filter>>([]);
+    const [ageFilters, setAgeFilters] = React.useState<Array<Filter>>(
+        AGE_RATINGS.map((value:string, index:number) => {
+            return {
+                name: value,
+                id:index,
+                active:false
+            } as Filter;
+        })
+    );
+    const [ageDialogOpen, setAgeDialogOpen] = React.useState(false);
 
     React.useEffect(() => {
         const getFilms = () => {
@@ -62,11 +74,16 @@ const FilmList = () => {
             if (query.length >= MIN_Q_LEN) {
                 url += "&q=" + query;
             }
-            genreFilters.map((genreFilter: GenreFilter) => {
+            genreFilters.map((genreFilter: Filter) => {
                 if (genreFilter.active) {
                     url += '&genreIds=' + genreFilter.id;
                 }
             } )
+            ageFilters.map((ageFilter: Filter) => {
+                if (ageFilter.active) {
+                    url += "&ageRatings=" + ageFilter.name;
+                }
+            })
             axios.get(url)
                 .then((response) => {
                     setErrorFlag(false);
@@ -85,18 +102,18 @@ const FilmList = () => {
 
         }
         getFilms();
-    }, [page,query,genreFilters])
+    }, [page,query,genreFilters,ageFilters])
 
     React.useEffect(() => {
         const getGenres = () => {
             axios.get(API_URL+"films/genres")
                 .then((response) => {
-                    const filters: Array<GenreFilter> = response.data.map((genre: Genre) => {
+                    const filters: Array<Filter> = response.data.map((genre: Genre) => {
                         return {
                             id:genre.genreId,
                             name:genre.name,
                             active:false
-                        } as GenreFilter
+                        } as Filter
                     })
                     setGenreFilters(filters);
                 })
@@ -117,28 +134,48 @@ const FilmList = () => {
 
     function bindGenreFilter(id: number) {
         const func = (e: React.SyntheticEvent, checked: boolean) => {
-            const out: Array<GenreFilter> = genreFilters.map((gf: GenreFilter) => {
+            const out: Array<Filter> = genreFilters.map((gf: Filter) => {
                 if (gf.id === id) {
                     return {
                         id:gf.id,
                         name:gf.name,
                         active:checked
-                    } as GenreFilter
+                    } as Filter
                 } else {
                     return gf;
                 }
             })
             setGenreFilters(out);
-            console.log("bind gf run")
         }
 
         return func;
     }
 
+    function bindAgeFilter(id: number) {
+        const func = (e: React.SyntheticEvent, checked: boolean) => {
+            const out: Array<Filter> = ageFilters.map((af: Filter) => {
+                if (af.id === id) {
+                    return {
+                        id:af.id,
+                        name:af.name,
+                        active:checked
+                    } as Filter
+                } else {
+                    return af;
+                }
+            })
+            setAgeFilters(out);
+        }
 
+        return func;
+    }
 
-    const genre_filters = () => genreFilters.map((genre: GenreFilter) =>
+    const genre_filters = () => genreFilters.map((genre: Filter) =>
         <FormControlLabel id={"genreFilter"+genre.id} key={"genreFilter"+genre.id} control={<Checkbox/>} label={genre.name} onChange={bindGenreFilter(genre.id)} />
+    );
+
+    const age_filters = () => ageFilters.map((age: Filter) =>
+        <FormControlLabel id={"ageFilter"+age.id} key={"ageFilter"+age.id} control={<Checkbox/>} label={age.name} onChange={bindAgeFilter(age.id)} />
     );
 
     const openGenreFilterDialog = () => {
@@ -147,6 +184,14 @@ const FilmList = () => {
 
     const handleGenreFilterDialog = () => {
         setGenreDialogOpen(false);
+    }
+
+    const openAgeFilterDialog = () => {
+        setAgeDialogOpen(true);
+    }
+
+    const handleAgeFilterDialog = () => {
+        setAgeDialogOpen(false);
     }
 
     const cardStyle: CSS.Properties = {
@@ -170,16 +215,33 @@ const FilmList = () => {
                        onChange={bindQuery}
             />
             <Button onClick={openGenreFilterDialog}>Filter Genres</Button>
+            <Button onClick={openAgeFilterDialog}>Filter Age Ratting</Button>
             { genreDialogOpen ?
                 <Dialog
                     open={genreDialogOpen}
                     onClose={handleGenreFilterDialog}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description">
-                    <DialogTitle id="alert-dialog-title">{"Filter films."}</DialogTitle>
+                    <DialogTitle id="alert-dialog-title">{"Filter films by genre."}</DialogTitle>
                     <DialogActions>
                         <FormGroup>
                             {genre_filters()}
+                        </FormGroup>
+                    </DialogActions>
+                </Dialog>
+                :
+                ""
+            }
+            { ageDialogOpen ?
+                <Dialog
+                    open={ageDialogOpen}
+                    onClose={handleAgeFilterDialog}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description">
+                    <DialogTitle id="alert-dialog-title">{"Filter films by age rating."}</DialogTitle>
+                    <DialogActions>
+                        <FormGroup>
+                            {age_filters()}
                         </FormGroup>
                     </DialogActions>
                 </Dialog>
