@@ -1,7 +1,22 @@
 import axios from 'axios';
 import React from "react";
 import CSS from 'csstype'
-import {Paper, AlertTitle, Alert, TextField, Dialog, DialogTitle, DialogActions, FormGroup, FormControlLabel, Checkbox, Button} from "@mui/material";
+import {
+    Paper,
+    AlertTitle,
+    Alert,
+    TextField,
+    Dialog,
+    DialogTitle,
+    DialogActions,
+    FormGroup,
+    FormControlLabel,
+    Checkbox,
+    Button,
+    MenuItem,
+    Select,
+    SelectChangeEvent
+} from "@mui/material";
 import {Link} from "react-router-dom";
 import FilmListObject from "./FilmListObject"
 import useStore from "../store";
@@ -17,6 +32,38 @@ type Filter = {
 }
 
 const AGE_RATINGS = ["G","PG","M","R13","R16","R18","TBC"]
+
+type Sort = {
+    name: string,
+    display: string
+}
+
+const SORT_RATINGS: Array<Sort> = [
+    {
+        name: "RELEASED_ASC",
+        display: "Released ascending"
+    },
+    {
+        name: "RELEASED_DESC",
+        display: "Released descending"
+    },
+    {
+        name: "RATING_ASC",
+        display: "Rating ascending"
+    },
+    {
+        name: "RATING_DESC",
+        display: "Rating descending"
+    },
+    {
+        name: "ALPHABETICAL_ASC",
+        display: "Alphabetical ascending"
+    },
+    {
+        name: "ALPHABETICAL_DESC",
+        display: "Alphabetical descending"
+    }
+]
 
 const FilmList = () => {
 
@@ -64,6 +111,8 @@ const FilmList = () => {
     );
     const [ageDialogOpen, setAgeDialogOpen] = React.useState(false);
 
+    const [sortId, setSortId] = React.useState<number>(0)
+
     React.useEffect(() => {
         const getFilms = () => {
             const start: number = (page-1) * PAGE_SIZE;
@@ -84,6 +133,7 @@ const FilmList = () => {
                     url += "&ageRatings=" + ageFilter.name;
                 }
             })
+            url += "&sortBy=" + SORT_RATINGS[sortId].name;
             axios.get(url)
                 .then((response) => {
                     setErrorFlag(false);
@@ -102,7 +152,7 @@ const FilmList = () => {
 
         }
         getFilms();
-    }, [page,query,genreFilters,ageFilters])
+    }, [page,query,genreFilters,ageFilters,sortId])
 
     React.useEffect(() => {
         const getGenres = () => {
@@ -194,6 +244,15 @@ const FilmList = () => {
         setAgeDialogOpen(false);
     }
 
+    const sort_dropdown = () => SORT_RATINGS.map((sort: Sort, index:number) =>
+        <MenuItem value={index}>{sort.display}</MenuItem>
+    );
+
+    const sortOnChange = (event: SelectChangeEvent) => {
+        setSortId(parseInt(event.target.value));
+    }
+
+
     const cardStyle: CSS.Properties = {
         padding: "10px",
         margin: '20px',
@@ -205,7 +264,6 @@ const FilmList = () => {
         width: "fit-content"
     }
 
-
     return (
         <div>
             <TextField label="Search" variant="outlined"
@@ -216,6 +274,12 @@ const FilmList = () => {
             />
             <Button onClick={openGenreFilterDialog}>Filter Genres</Button>
             <Button onClick={openAgeFilterDialog}>Filter Age Ratting</Button>
+            <Select
+                value={sortId.toString()}
+                onChange={sortOnChange}
+            >
+                {sort_dropdown()}
+            </Select>
             { genreDialogOpen ?
                 <Dialog
                     open={genreDialogOpen}
