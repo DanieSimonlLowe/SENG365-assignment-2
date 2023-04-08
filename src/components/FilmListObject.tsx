@@ -5,6 +5,7 @@ import {Film} from "../types/films";
 import {API_URL} from "../Constantes";
 import axios from "axios";
 import Image from "../classes/images";
+import { Link } from 'react-router-dom'
 interface  IFilmProps {
     film: Film
 }
@@ -34,7 +35,7 @@ const FilmListObject = (props: IFilmProps) => {
     React.useEffect(() => {
         const getFilmDate = () => {
             const date: Date = new Date(film.releaseDate);
-            setFilmDate(date.getDay()+"/"+date.getMonth()+"/"+date.getFullYear());
+            setFilmDate(date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear());
         }
         try {
             getFilmDate();
@@ -70,9 +71,10 @@ const FilmListObject = (props: IFilmProps) => {
         getImage()
     },[film])
 
+
     return (
         <Card sx={filmCardStyles}>
-            <CardActionArea>
+            <CardActionArea component={Link} to={"/film/"+film.filmId}>
                 { hasImage && filmImage instanceof Image ?
                     <CardMedia component="img"
                                height="100"

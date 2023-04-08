@@ -19,7 +19,6 @@ import {
 } from "@mui/material";
 import {Link} from "react-router-dom";
 import FilmListObject from "./FilmListObject"
-import useStore from "../store";
 import {Film} from "../types/films";
 import {Genre} from "../types/genres";
 import {useParams} from "react-router-dom";
@@ -85,8 +84,7 @@ const FilmList = () => {
         page = 1;
     }
 
-    const films = useStore(state => state.films);
-    const setFilms = useStore(state => state.setFilms);
+    const [films, setFilms] = React.useState<Array<Film>>([]);
 
     const [genreDialogOpen, setGenreDialogOpen] = React.useState(false);
 
@@ -179,11 +177,11 @@ const FilmList = () => {
     }
 
     const films_rows = () => films.map((film:Film) =>
-        <FilmListObject key={film.filmId} film={film}/>
+        <FilmListObject key={"film"+film.filmId} film={film}/>
     )
 
     function bindGenreFilter(id: number) {
-        const func = (e: React.SyntheticEvent, checked: boolean) => {
+        return (e: React.SyntheticEvent, checked: boolean) => {
             const out: Array<Filter> = genreFilters.map((gf: Filter) => {
                 if (gf.id === id) {
                     return {
@@ -197,12 +195,10 @@ const FilmList = () => {
             })
             setGenreFilters(out);
         }
-
-        return func;
     }
 
     function bindAgeFilter(id: number) {
-        const func = (e: React.SyntheticEvent, checked: boolean) => {
+        return (e: React.SyntheticEvent, checked: boolean) => {
             const out: Array<Filter> = ageFilters.map((af: Filter) => {
                 if (af.id === id) {
                     return {
@@ -216,8 +212,6 @@ const FilmList = () => {
             })
             setAgeFilters(out);
         }
-
-        return func;
     }
 
     const genre_filters = () => genreFilters.map((genre: Filter) =>

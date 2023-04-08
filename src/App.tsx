@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import './App.css';
 import NotFound from "./components/NotFound";
 import FilmList from "./components/FilmList";
+import FilmView from "./components/FilmView";
 
 function App() {
   return (
@@ -10,8 +11,9 @@ function App() {
         <Router>
           <div>
             <Routes>
-              <Route path="/films/:p" element={<FilmList/>}/>
-              <Route path="*" element={<NotFound/>}/>
+                <Route path="/films/:p" element={<FilmList/>}/>
+                <Route path="/film/:id" element={<FilmView/>}/>
+                <Route path="*" element={<NotFound/>}/>
             </Routes>
           </div>
         </Router>
