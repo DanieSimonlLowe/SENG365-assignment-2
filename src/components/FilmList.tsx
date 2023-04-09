@@ -23,6 +23,7 @@ import {Film} from "../types/films";
 import {Genre} from "../types/genres";
 import {useParams} from "react-router-dom";
 import {API_URL} from "../Constantes";
+import { useNavigate } from "react-router-dom";
 
 type Filter = {
     name: string,
@@ -83,6 +84,7 @@ const FilmList = () => {
     } catch (e) {
         page = 1;
     }
+    const navigate = useNavigate();
 
     const [films, setFilms] = React.useState<Array<Film>>([]);
 
@@ -139,7 +141,7 @@ const FilmList = () => {
                         setNoFilms(true);
                     } else {
                         setFilms(response.data.films);
-                        setPageCount(Math.ceil(response.data.count / PAGE_SIZE) - 1);
+                        setPageCount(Math.ceil(response.data.count / PAGE_SIZE));
                         setNoFilms(false);
                     }
                 }, (error) => {
@@ -173,6 +175,7 @@ const FilmList = () => {
         const value = e.target.value;
         if (value !== query && (value.length >= MIN_Q_LEN || query.length >= MIN_Q_LEN)) {
             setQuery(value);
+            navigate("/films/1")
         }
     }
 
@@ -184,6 +187,7 @@ const FilmList = () => {
         return (e: React.SyntheticEvent, checked: boolean) => {
             const out: Array<Filter> = genreFilters.map((gf: Filter) => {
                 if (gf.id === id) {
+                    navigate("/films/1")
                     return {
                         id:gf.id,
                         name:gf.name,
@@ -201,6 +205,7 @@ const FilmList = () => {
         return (e: React.SyntheticEvent, checked: boolean) => {
             const out: Array<Filter> = ageFilters.map((af: Filter) => {
                 if (af.id === id) {
+                    navigate("/films/1")
                     return {
                         id:af.id,
                         name:af.name,
