@@ -90,7 +90,13 @@ const FilmView = () => {
         const getReviews = () => {
             axios.get(API_URL+"films/" + id+"/reviews")
                 .then((response) => {
-                    setReviews(response.data);
+                    setReviews(response.data.filter((review:Review) => {
+                        try {
+                            return review.review.length > 0;
+                        } catch (e) {
+                            return false;
+                        }
+                    }));
                 })
         }
         getReviews();
@@ -106,13 +112,7 @@ const FilmView = () => {
         }
     }
 
-    const reviews_rows = () => reviews.filter((review:Review) => {
-        try {
-            return review.review.length > 0;
-        } catch (e) {
-            return false;
-        }
-    }).map((review:Review) =>
+    const reviews_rows = () => reviews.map((review:Review) =>
         <ReviewObject key={"review"+review.reviewerId+review.timeStamp} review={review}/>
     )
 
@@ -126,13 +126,13 @@ const FilmView = () => {
             <h2>run time {film.runtime}</h2>
             <h2>average rating {film.rating}, number of ratings {film.numRatings}</h2>
             <p>{film.description}</p>
-            { reviews.length > 0?
+            {reviews.length > 0?
             <Paper elevation={3} style={cardStyle}>
                 <div style={{display: "inline-block", maxWidth: "965", minWidth: "320"}}>
                     {reviews_rows()}
                 </div>
-            </Paper>
-                : <h1>{reviews.length}</h1>}
+            </Paper> : ""
+            }
         </div>
         : <h1>failed to load film</h1>}
         </div>

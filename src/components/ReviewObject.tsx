@@ -18,8 +18,10 @@ const reviewObject = (props: IReviewProps) => {
 
     return (<Card sx={reviewCardStyles}>
         <CardContent>
-
-            <Typography variant="h3" component="h3">{props.review.review + "stuff"}</Typography>
+            <div>
+                <Typography variant="h5" component="h5">{props.review.reviewerFirstName + " " + props.review.reviewerLastName + " : " + props.review.rating + "/10"}</Typography>
+                <Typography variant="body1">{props.review.review}</Typography>
+            </div>
         </CardContent>
     </Card>)
 }
