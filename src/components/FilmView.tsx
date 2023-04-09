@@ -9,6 +9,8 @@ import {API_URL} from "../Constantes";
 import {Genre} from "../types/genres";
 import {Review} from "../types/reviews";
 import ReviewObject from "./ReviewObject"
+import FilmListObject from "./FilmListObject";
+import f from "../types/films";
 
 type Film = {
     filmId:number,
@@ -53,6 +55,7 @@ const FilmView = () => {
     const [reviews, setReviews] = React.useState<Array<Review>>([]);
 
     const [genre, setGenre] = React.useState("");
+    const [similarFilms, setSimilarFilms] = React.useState<Array<f.Film>>([]);
 
 
     React.useEffect(() => {
@@ -102,6 +105,35 @@ const FilmView = () => {
         getReviews();
     }, [id])
 
+    React.useEffect(() => {
+        const getFilms = () => {
+
+            let films:Array<f.Film> = [];
+            axios.get(API_URL+"films?genreIds="+film.genreId)
+                .then((response) => {
+                    films = response.data.films;
+                    axios.get(API_URL+"films?directorId="+film.directorId)
+                        .then((response) => {
+                            (response.data.films).map((film: f.Film) => {
+                                let notHasFilm = true;
+                                films.map((film2 : f.Film) => {
+                                    if (film.filmId === film2.filmId) {
+                                        notHasFilm = false;
+                                    }
+                                })
+                                if (notHasFilm) {
+                                    films.push(film);
+                                }
+                            })
+                            setSimilarFilms(films);
+                        })
+                })
+        }
+        if (filmLoaded) {
+            getFilms()
+        }
+    }, [film,filmLoaded])
+
     const getDateString = () => {
         try {
             // @ts-ignore
@@ -114,6 +146,10 @@ const FilmView = () => {
 
     const reviews_rows = () => reviews.map((review:Review) =>
         <ReviewObject key={"review"+review.reviewerId+review.timeStamp} review={review}/>
+    )
+
+    const films_rows = () => similarFilms.map((film: f.Film) =>
+        <FilmListObject film={film} key={"similarFilm"+film.filmId}/>
     )
 
     return (
@@ -132,6 +168,13 @@ const FilmView = () => {
                     {reviews_rows()}
                 </div>
             </Paper> : ""
+            }
+            {similarFilms.length > 0?
+                <Paper elevation={3} style={cardStyle}>
+                    <div style={{display: "inline-block", maxWidth: "965", minWidth: "320"}}>
+                        {films_rows()}
+                    </div>
+                </Paper> : ""
             }
         </div>
         : <h1>failed to load film</h1>}
