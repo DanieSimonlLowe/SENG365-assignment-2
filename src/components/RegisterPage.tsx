@@ -61,21 +61,21 @@ const RegisterPage = () => {
         <Box display="flex"
              flexDirection="column"
              alignItems="center">
-        <Stack
-            component="form"
-            spacing={2}
-            noValidate
-            autoComplete="off"
-        >
-            <Box sx={{height:30}}/>
-            <TextField id="firstNameInput" label="First Name" variant="outlined" onChange={(e) => {setFirstName(e.target.value)} }/>
-            <TextField id="lastNameInput" label="Last Name" variant="outlined" onChange={(e) => {setLastName(e.target.value)}}/>
-            <TextField id="emailInput" label="Email" variant="outlined" onChange={(e) => {setEmail(e.target.value)}}/>
-            <TextField id="passwordInput" label="Password" type="password" variant="outlined" onChange={(e) => {setPassword(e.target.value)}}/>
-            <Button variant="contained" onClick={register}>Register</Button>
-            {success? <Alert severity="success">successfully registered and logged in</Alert>: ""}
-            {hasError? <Alert severity="error">{errorMessage}</Alert> : ""}
-        </Stack>
+            <Stack
+                component="form"
+                spacing={2}
+                noValidate
+                autoComplete="off"
+            >
+                <Box sx={{height:30}}/>
+                <TextField id="firstNameInput" label="First Name" variant="outlined" onChange={(e) => {setFirstName(e.target.value)} }/>
+                <TextField id="lastNameInput" label="Last Name" variant="outlined" onChange={(e) => {setLastName(e.target.value)}}/>
+                <TextField id="emailInput" label="Email" variant="outlined" onChange={(e) => {setEmail(e.target.value)}}/>
+                <TextField id="passwordInput" label="Password" type="password" variant="outlined" onChange={(e) => {setPassword(e.target.value)}}/>
+                <Button variant="contained" onClick={register}>Register</Button>
+                {success? <Alert severity="success">successfully registered and logged in</Alert>: ""}
+                {hasError? <Alert severity="error">{errorMessage}</Alert> : ""}
+            </Stack>
         </Box>
     )
 }
