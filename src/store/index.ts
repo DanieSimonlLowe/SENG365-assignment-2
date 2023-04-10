@@ -7,7 +7,7 @@ interface DataState {
     setUserId: (id: number) => void;
 }
 
-const BASE_KEY: string = 'M9q8Yn7!av6nA6fRGzYXq';
+const BASE_KEY: string = 'M9q8Yn-*7!av6nA6f&RGzYXq';
 
 const getLocalStorage = (key: string): string => JSON.parse(window.localStorage.getItem(BASE_KEY+key) as string);
 const setLocalStorage = (key: string, value: string): void => window.localStorage.setItem(BASE_KEY+key,JSON.stringify(value));
