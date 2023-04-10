@@ -5,6 +5,7 @@ import NotFound from "./components/NotFound";
 import FilmList from "./components/FilmList";
 import FilmView from "./components/FilmView";
 import RegisterPage from "./components/RegisterPage";
+import LoginPage from "./components/LoginPage"
 import useStore from "./store";
 
 function App() {
@@ -12,17 +13,26 @@ function App() {
 
   return (
       <div className="App">
-        <Router>
-          <div>
-            <Routes>
-                {userId===-1?
-                    <Route path="/register" element={<RegisterPage/>}/>
-                :''}
-                <Route path="/films/:p" element={<FilmList/>}/>
-                <Route path="/film/:id" element={<FilmView/>}/>
-                <Route path="*" element={<NotFound/>}/>
-            </Routes>
-          </div>
+          <Router>
+              {userId===-1?
+                  <div>
+                      <Routes>
+
+                          <Route path="/register" element={<RegisterPage/>}/>
+                          <Route path="/login" element={<LoginPage/>}/>
+                          <Route path="/films/:p" element={<FilmList/>}/>
+                          <Route path="/film/:id" element={<FilmView/>}/>
+                          <Route path="*" element={<NotFound/>}/>
+                      </Routes>
+                  </div>
+              :   <div>
+                      <Routes>
+
+                          <Route path="/films/:p" element={<FilmList/>}/>
+                          <Route path="/film/:id" element={<FilmView/>}/>
+                          <Route path="*" element={<NotFound/>}/>
+                      </Routes>
+                  </div>}
         </Router>
       </div>
   );
