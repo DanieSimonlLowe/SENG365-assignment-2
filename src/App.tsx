@@ -5,14 +5,19 @@ import NotFound from "./components/NotFound";
 import FilmList from "./components/FilmList";
 import FilmView from "./components/FilmView";
 import RegisterPage from "./components/RegisterPage";
+import useStore from "./store";
 
 function App() {
+    const userId = useStore(state => state.userId);
+
   return (
       <div className="App">
         <Router>
           <div>
             <Routes>
-                <Route path="/register" element={<RegisterPage/>}/>
+                {userId===-1?
+                    <Route path="/register" element={<RegisterPage/>}/>
+                :''}
                 <Route path="/films/:p" element={<FilmList/>}/>
                 <Route path="/film/:id" element={<FilmView/>}/>
                 <Route path="*" element={<NotFound/>}/>
