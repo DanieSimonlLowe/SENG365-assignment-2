@@ -4,6 +4,7 @@ import './App.css';
 import NotFound from "./components/NotFound";
 import FilmList from "./components/FilmList";
 import FilmView from "./components/FilmView";
+import RegisterPage from "./components/RegisterPage";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Router>
           <div>
             <Routes>
+                <Route path="/register" element={<RegisterPage/>}/>
                 <Route path="/films/:p" element={<FilmList/>}/>
                 <Route path="/film/:id" element={<FilmView/>}/>
                 <Route path="*" element={<NotFound/>}/>
