@@ -49,7 +49,7 @@ const RegisterPage = () => {
             setHasError(true);
             if (error.status === 400) {
                 setErrorMessage("invalid registration input")
-            } else if (error.status == 403) {
+            } else if (error.status === 403) {
                 setErrorMessage("email already in use.")
             } else {
                 setErrorMessage("Internal Server Error")
