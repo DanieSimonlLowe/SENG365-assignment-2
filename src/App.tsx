@@ -9,6 +9,7 @@ import LoginPage from "./components/LoginPage"
 import NavBar from "./components/NavBar"
 import useStore from "./store";
 import LogoutPage from "./components/LogoutPage";
+import CreateFilm from "./components/CreateFilm";
 
 function App() {
     const userId = useStore(state => state.userId);
@@ -31,6 +32,7 @@ function App() {
                     </div>
               :   <div>
                       <Routes>
+                          <Route path="/film/create" element={<CreateFilm/>}/>
                           <Route path="/logout" element={<LogoutPage/>}/>
                           <Route path="/films/:p" element={<FilmList/>}/>
                           <Route path="/film/:id" element={<FilmView/>}/>

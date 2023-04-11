@@ -9,7 +9,8 @@ type LinkInfo = {
 
 const LoggedInLinks: Array<LinkInfo> = [
     {name:"films", link:"/films/1"},
-    {name:"logout", link:"/logout"}
+    {name:"logout", link:"/logout"},
+    {name:"create film", link:"/film/create"},
 ]
 
 const LoggedOutLinks: Array<LinkInfo> = [

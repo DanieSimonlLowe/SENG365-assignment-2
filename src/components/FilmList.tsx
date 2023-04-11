@@ -24,6 +24,7 @@ import {Genre} from "../types/genres";
 import {useParams} from "react-router-dom";
 import {API_URL} from "../Constantes";
 import { useNavigate } from "react-router-dom";
+import {AGE_RATINGS} from "../Constantes";
 
 type Filter = {
     name: string,
@@ -31,7 +32,6 @@ type Filter = {
     active: boolean
 }
 
-const AGE_RATINGS = ["G","PG","M","R13","R16","R18","TBC"]
 
 type Sort = {
     name: string,
