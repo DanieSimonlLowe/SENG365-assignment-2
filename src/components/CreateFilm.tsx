@@ -55,7 +55,6 @@ const CreateFilm = () => {
             return;
         } else if(date instanceof Date && !isNaN(date.valueOf()) && date.getUTCMilliseconds() > now.getUTCMilliseconds()) {
             setDate(date);
-            console.log(getDateString())
         }
     }
 
@@ -105,7 +104,6 @@ const CreateFilm = () => {
                 "ageRating": ageRating
             }
         }
-        console.log(data);
         axios.post(API_URL+"films", data, {
             headers: {
                 'X-Authorization': token
