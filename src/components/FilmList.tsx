@@ -130,12 +130,12 @@ const FilmList = () => {
             if (query.length >= MIN_Q_LEN) {
                 url += "&q=" + query;
             }
-            genreFilters.map((genreFilter: Filter) => {
+            genreFilters.forEach((genreFilter: Filter) => {
                 if (genreFilter.active) {
                     url += '&genreIds=' + genreFilter.id;
                 }
             } )
-            ageFilters.map((ageFilter: Filter) => {
+            ageFilters.forEach((ageFilter: Filter) => {
                 if (ageFilter.active) {
                     url += "&ageRatings=" + ageFilter.name;
                 }
@@ -167,12 +167,12 @@ const FilmList = () => {
             if (query.length >= MIN_Q_LEN) {
                 url += "&q=" + query;
             }
-            genreFilters.map((genreFilter: Filter) => {
+            genreFilters.forEach((genreFilter: Filter) => {
                 if (genreFilter.active) {
                     url += '&genreIds=' + genreFilter.id;
                 }
             } )
-            ageFilters.map((ageFilter: Filter) => {
+            ageFilters.forEach((ageFilter: Filter) => {
                 if (ageFilter.active) {
                     url += "&ageRatings=" + ageFilter.name;
                 }
@@ -227,7 +227,7 @@ const FilmList = () => {
         } else {
             getFilms();
         }
-    }, [page,query,genreFilters,ageFilters,sortId,onlyAllowOwn])
+    }, [page,query,genreFilters,ageFilters,sortId,onlyAllowOwn, userId])
 
     React.useEffect(() => {
         const getGenres = () => {

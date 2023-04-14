@@ -42,15 +42,13 @@ const ReviewFrom = (props: IReviewProps) => {
             setErrorMessage("can't review a film until it has been released.");
             setErrorType("info");
             return;
-        } else {
-            if (props.reviews.some((review: Review) => {
-                return review.reviewerId === userId;
-            })) {
-                setErrorFlag(true);
-                setErrorMessage("you can't edit or double post a review on the same film.");
-                setErrorType("info");
-                return;
-            }
+        } else if (props.reviews.some((review: Review) => {
+            return review.reviewerId === userId;
+        })) {
+            setErrorFlag(true);
+            setErrorMessage("you can't edit or double post a review on the same film.");
+            setErrorType("info");
+            return;
         }
 
         let data: { [id:string] : (string|number); } = {};

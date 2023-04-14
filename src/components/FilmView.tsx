@@ -76,7 +76,7 @@ const FilmView = () => {
         const getGenre = () => {
             axios.get(API_URL+"films/genres")
                 .then((response) => {
-                    response.data.map((genre: Genre) => {
+                    response.data.forEach((genre: Genre) => {
                         if (genre.genreId === film?.genreId) {
                             setGenre(genre.name);
                         }
@@ -88,7 +88,7 @@ const FilmView = () => {
         if (filmLoaded) {
             getGenre()
         }
-    }, [film]);
+    }, [film, filmLoaded]);
 
     React.useEffect( () => {
         const getReviews = () => {
@@ -115,9 +115,9 @@ const FilmView = () => {
                     films = response.data.films;
                     axios.get(API_URL+"films?directorId="+film.directorId)
                         .then((response) => {
-                            (response.data.films).map((film: f.Film) => {
+                            (response.data.films).forEach((film: f.Film) => {
                                 let notHasFilm = true;
-                                films.map((film2 : f.Film) => {
+                                films.forEach((film2 : f.Film) => {
                                     if (film.filmId === film2.filmId) {
                                         notHasFilm = false;
                                     }

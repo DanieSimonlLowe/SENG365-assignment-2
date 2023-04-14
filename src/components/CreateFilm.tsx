@@ -39,10 +39,9 @@ const CreateFilm = () => {
             axios.get(API_URL+"films/genres")
                 .then((response) => {
                     setGenres(response.data);
-                    response.data.map((value: Genre) => {
+                    response.data.forEach((value: Genre) => {
                         if (genre === -1) {
                             setGenre(value.genreId);
-                            return;
                         }
                     })
                 })
@@ -53,7 +52,7 @@ const CreateFilm = () => {
     const changeDate = (date:(Date|null)) => {
         if (date === null) {
             return;
-        } else if(date instanceof Date && !isNaN(date.valueOf()) && date.getUTCMilliseconds() > now.getUTCMilliseconds()) {
+        } else if(true && !isNaN(date.valueOf()) && date.getUTCMilliseconds() > now.getUTCMilliseconds()) {
             setDate(date);
         }
     }

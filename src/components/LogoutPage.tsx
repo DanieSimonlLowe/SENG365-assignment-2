@@ -3,7 +3,6 @@ import axios from "axios";
 import {API_URL} from "../Constantes";
 import useStore from "../store";
 import React from "react";
-import {Film} from "../types/films";
 const LogoutPage = () => {
     const token = useStore(state => state.authToken);
     const setAuthToken = useStore(state => state.setAuthToken);
@@ -37,7 +36,7 @@ const LogoutPage = () => {
     return (
         <Box textAlign='center' >
             {hasError? <Alert severity="error">failed to log out please try agin.</Alert> : ""}
-            <Button variant='contained' onClick={logOut}>
+            <Button variant='contained' onClick={logOutButton}>
                 Log Out
             </Button>
         </Box>
