@@ -144,30 +144,14 @@ const FilmList = () => {
             axios.get(url)
                 .then((response) => {
                     setErrorFlag(false);
+                    const count: number = response.data.count;
                     const films: Array<Film> = response.data.films;
                     if (films.length === 0) {
                         setNoFilms(true);
-                    } else if (onlyAllowOwn) {
-                        const newFilms = films.filter(async (film:Film) => {
-                            if (film.directorId === userId) {
-                                return true;
-                            }
-                            let hasReviewed = false;
-                            await axios.get(API_URL+"films/"+film.filmId+"/review")
-                                .then((response) => {
-                                    hasReviewed = response.data.some((review:Review) => {
-                                        return review.reviewerId === userId
-                                    })
-                                })
-                            return hasReviewed;
-                        })
-                        setNoFilms(newFilms.length === 0);
-                        setFilms(newFilms);
-                        setPageCount(Math.ceil(newFilms.length / PAGE_SIZE));
                     } else {
                         setNoFilms(false);
                         setFilms(films);
-                        setPageCount(Math.ceil(films.length / PAGE_SIZE));
+                        setPageCount(Math.ceil(count / PAGE_SIZE));
                     }
                 }, (error) => {
                     setErrorFlag(true);
@@ -176,7 +160,73 @@ const FilmList = () => {
                 });
 
         }
-        getFilms();
+
+        const getFilteredFilms = () => {
+            const start: number = (page-1) * PAGE_SIZE;
+            let url = ""
+            if (query.length >= MIN_Q_LEN) {
+                url += "&q=" + query;
+            }
+            genreFilters.map((genreFilter: Filter) => {
+                if (genreFilter.active) {
+                    url += '&genreIds=' + genreFilter.id;
+                }
+            } )
+            ageFilters.map((ageFilter: Filter) => {
+                if (ageFilter.active) {
+                    url += "&ageRatings=" + ageFilter.name;
+                }
+            })
+            url += "&sortBy=" + SORT_RATINGS[sortId].name;
+            if (url !== '') {
+                url = API_URL+"films?"+url.substring(1);
+            } else {
+                url = API_URL+"films";
+            }
+            axios.get(url)
+                .then(async (response) => {
+                    setErrorFlag(false);
+                    const films: Array<Film> = response.data.films;
+                    if (films.length === 0) {
+                        setNoFilms(true);
+                    } else {
+                        setNoFilms(false);
+                        const func = async (film:Film) => {
+                            if (film.directorId === userId) {
+                                return true;
+                            }
+                            let hasReviewed = false;
+                            await axios.get(API_URL+"films/" + film.filmId+"/reviews")
+                                .then((response) => {
+                                    hasReviewed = response.data.some((review: Review) => {
+                                        return review.reviewerId === userId
+                                    })
+                                }, (error) => {
+                                    hasReviewed = false;
+                                })
+                            return hasReviewed;
+                        };
+                        const promises = films.map((film: Film) => {return func(film)})
+                        const results = await Promise.all(promises);
+                        const newFilms = films.filter((film: Film, id: number) => {
+                            return results[id];
+                        })
+
+                        setNoFilms(newFilms.length === 0);
+                        setPageCount(Math.ceil(newFilms.length / PAGE_SIZE));
+                        if (newFilms.length <= PAGE_SIZE) {
+                            setFilms(newFilms);
+                        } else {
+                            setFilms(newFilms.slice(start,start+PAGE_SIZE));
+                        }
+                    }
+                })
+        }
+        if (onlyAllowOwn) {
+            getFilteredFilms();
+        } else {
+            getFilms();
+        }
     }, [page,query,genreFilters,ageFilters,sortId,onlyAllowOwn])
 
     React.useEffect(() => {
