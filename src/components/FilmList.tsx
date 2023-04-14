@@ -25,6 +25,8 @@ import {useParams} from "react-router-dom";
 import {API_URL} from "../Constantes";
 import { useNavigate } from "react-router-dom";
 import {AGE_RATINGS} from "../Constantes";
+import useStore from "../store";
+import FilmListObjectLoggedIn from "./FilmListObjectLoggedIn";
 
 type Filter = {
     name: string,
@@ -111,7 +113,9 @@ const FilmList = () => {
     );
     const [ageDialogOpen, setAgeDialogOpen] = React.useState(false);
 
-    const [sortId, setSortId] = React.useState<number>(0)
+    const [sortId, setSortId] = React.useState<number>(0);
+
+    const userId = useStore(state => state.userId);
 
     React.useEffect(() => {
         const getFilms = () => {
@@ -179,9 +183,13 @@ const FilmList = () => {
         }
     }
 
-    const films_rows = () => films.map((film:Film) =>
-        <FilmListObject key={"film"+film.filmId} film={film}/>
-    )
+    const films_rows = () => { return films.map((film:Film) => {
+            if (film.directorId === userId) {
+                return (<FilmListObjectLoggedIn key={"film" + film.filmId} film={film}/>)
+            } else {
+                return (<FilmListObject key={"film" + film.filmId} film={film}/>)
+            }
+    })};
 
     function bindGenreFilter(id: number) {
         return (e: React.SyntheticEvent, checked: boolean) => {
