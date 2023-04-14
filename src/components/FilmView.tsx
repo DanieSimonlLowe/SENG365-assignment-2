@@ -11,6 +11,7 @@ import {Review} from "../types/reviews";
 import ReviewObject from "./ReviewObject"
 import FilmListObject from "./FilmListObject";
 import f from "../types/films";
+import ReviewFrom from "./ReviewFrom";
 
 type Film = {
     filmId:number,
@@ -162,6 +163,7 @@ const FilmView = () => {
             <h2>run time {film.runtime}</h2>
             <h2>average rating {film.rating}, number of ratings {film.numRatings}</h2>
             <p>{film.description}</p>
+            <ReviewFrom dirId={film.directorId} filmId={film.filmId} relDate={film.releaseDate} reviews={reviews}/>
             {reviews.length > 0?
             <Paper elevation={3} style={cardStyle}>
                 <div style={{display: "inline-block", maxWidth: "965", minWidth: "320"}}>
