@@ -101,6 +101,8 @@ const FilmList = () => {
 
     const [noFilms, setNoFilms] = React.useState(true);
 
+    const [onlyAllowOwn, setOnlyAllowOwn] = React.useState(false);
+
     const [genreFilters, setGenreFilters] = React.useState<Array<Filter>>([]);
     const [ageFilters, setAgeFilters] = React.useState<Array<Filter>>(
         AGE_RATINGS.map((value:string, index:number) => {
@@ -137,6 +139,9 @@ const FilmList = () => {
                     url += "&ageRatings=" + ageFilter.name;
                 }
             })
+            if (onlyAllowOwn) {
+                url += "&directorId=" + userId;
+            }
             url += "&sortBy=" + SORT_RATINGS[sortId].name;
             axios.get(url)
                 .then((response) => {
@@ -156,7 +161,7 @@ const FilmList = () => {
 
         }
         getFilms();
-    }, [page,query,genreFilters,ageFilters,sortId])
+    }, [page,query,genreFilters,ageFilters,sortId,onlyAllowOwn])
 
     React.useEffect(() => {
         const getGenres = () => {
@@ -271,6 +276,10 @@ const FilmList = () => {
         width: "fit-content"
     }
 
+    const changeOnlyAllowOwn = () => {
+        setOnlyAllowOwn(!onlyAllowOwn);
+    }
+
     return (
         <div>
             <TextField label="Search" variant="outlined"
@@ -279,6 +288,9 @@ const FilmList = () => {
                        style={inputStyle}
                        onChange={bindQuery}
             />
+            {userId === -1 ? "" :
+                <FormControlLabel control={<Checkbox value={onlyAllowOwn} onChange={changeOnlyAllowOwn} />} label="view your films"/>
+            }
             <Button onClick={openGenreFilterDialog}>Filter Genres</Button>
             <Button onClick={openAgeFilterDialog}>Filter Age Ratting</Button>
             <Select
