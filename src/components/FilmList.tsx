@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 import {AGE_RATINGS} from "../Constantes";
 import useStore from "../store";
 import FilmListObjectLoggedIn from "./FilmListObjectLoggedIn";
+import {Review} from "../types/reviews";
 
 type Filter = {
     name: string,
@@ -139,25 +140,40 @@ const FilmList = () => {
                     url += "&ageRatings=" + ageFilter.name;
                 }
             })
-            if (onlyAllowOwn) {
-                url += "&directorId=" + userId;
-            }
             url += "&sortBy=" + SORT_RATINGS[sortId].name;
             axios.get(url)
                 .then((response) => {
                     setErrorFlag(false);
-                    if (response.data.count === 0) {
+                    const films: Array<Film> = response.data.films;
+                    if (films.length === 0) {
                         setNoFilms(true);
+                    } else if (onlyAllowOwn) {
+                        const newFilms = films.filter(async (film:Film) => {
+                            if (film.directorId === userId) {
+                                return true;
+                            }
+                            let hasReviewed = false;
+                            await axios.get(API_URL+"films/"+film.filmId+"/review")
+                                .then((response) => {
+                                    hasReviewed = response.data.some((review:Review) => {
+                                        return review.reviewerId === userId
+                                    })
+                                })
+                            return hasReviewed;
+                        })
+                        setNoFilms(newFilms.length === 0);
+                        setFilms(newFilms);
+                        setPageCount(Math.ceil(newFilms.length / PAGE_SIZE));
                     } else {
-                        setFilms(response.data.films);
-                        setPageCount(Math.ceil(response.data.count / PAGE_SIZE));
                         setNoFilms(false);
+                        setFilms(films);
+                        setPageCount(Math.ceil(films.length / PAGE_SIZE));
                     }
                 }, (error) => {
                     setErrorFlag(true);
                     setErrorMessage(error.toString + "\n may be on an invalid page number.")
                     setNoFilms(true);
-                })
+                });
 
         }
         getFilms();
@@ -289,7 +305,7 @@ const FilmList = () => {
                        onChange={bindQuery}
             />
             {userId === -1 ? "" :
-                <FormControlLabel control={<Checkbox value={onlyAllowOwn} onChange={changeOnlyAllowOwn} />} label="view your films"/>
+                <FormControlLabel control={<Checkbox value={onlyAllowOwn} onChange={changeOnlyAllowOwn} />} label="view films you interacted with"/>
             }
             <Button onClick={openGenreFilterDialog}>Filter Genres</Button>
             <Button onClick={openAgeFilterDialog}>Filter Age Ratting</Button>
