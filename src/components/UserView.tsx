@@ -4,6 +4,7 @@ import {API_URL} from "../Constantes";
 import useStore from "../store";
 const UserView = () => {
     const userId = useStore(state => state.userId);
+    const token = useStore(state => state.authToken);
 
     const [email, setEmail] = React.useState("loading");
     const [firstName, setFirstName] = React.useState("loading");
@@ -11,7 +12,10 @@ const UserView = () => {
 
     React.useEffect(() => {
         const getUser = () => {
-            axios.get(API_URL + "users/" + userId)
+            axios.get(API_URL + "users/" + userId,{
+                headers: {
+                    'X-Authorization': token
+                }})
                 .then((response) => {
                     setEmail(response.data.email);
                     setFirstName(response.data.firstName);
