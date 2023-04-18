@@ -12,6 +12,7 @@ const LoggedInLinks: Array<LinkInfo> = [
     {name:"logout", link:"/logout"},
     {name:"create film", link:"/film/create"},
     {name:"profile", link:"/profile"},
+    {name:"edit profile", link:"/profile/edit"},
 ]
 
 const LoggedOutLinks: Array<LinkInfo> = [
