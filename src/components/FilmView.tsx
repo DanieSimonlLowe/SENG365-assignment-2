@@ -12,6 +12,7 @@ import ReviewObject from "./ReviewObject"
 import FilmListObject from "./FilmListObject";
 import f from "../types/films";
 import ReviewFrom from "./ReviewFrom";
+import Image from "../classes/images";
 
 type Film = {
     filmId:number,
@@ -37,6 +38,10 @@ const FilmView = () => {
         width: "fit-content"
     }
 
+    const imageStyle: CSS.Properties = {
+        maxHeight: "40vh"
+    }
+
     const {id} = useParams();
     const [film, setFilm] = React.useState<Film>({
         ageRating: "",
@@ -57,6 +62,8 @@ const FilmView = () => {
 
     const [genre, setGenre] = React.useState("");
     const [similarFilms, setSimilarFilms] = React.useState<Array<f.Film>>([]);
+    const [filmImage, setFilmImage] = React.useState<Image>();
+    const [hasImage, setHasImage] = React.useState(false);
 
 
     React.useEffect(() => {
@@ -135,6 +142,32 @@ const FilmView = () => {
         }
     }, [film,filmLoaded])
 
+    React.useEffect(() => {
+        const getImage = () => {
+            axios.get(API_URL+"films/"+id+"/image", {
+                responseType: 'arraybuffer',
+                headers: {'content-type': 'none'}
+            })
+                .then((response) => {
+                    try {
+                        const type: string = response.headers['content-type'] as string;
+                        if (type === undefined || type === 'none') {
+                            setHasImage(false);
+                        } else {
+                            const image: Image = new Image(response.data);
+                            setFilmImage(image);
+                            setHasImage(true);
+                        }
+                    } catch (e) {
+                        setHasImage(false);
+                    }
+                }, (error) => {
+                    setHasImage(false);
+                })
+        }
+        getImage()
+    },[id])
+
     const getDateString = () => {
         try {
             // @ts-ignore
@@ -157,6 +190,10 @@ const FilmView = () => {
         <div>
             {filmLoaded?
         <div>
+            { hasImage && filmImage instanceof Image ?
+                <img src={filmImage?.getSource()} style={imageStyle}/>:
+                <img src={require("../images/movie.png")} style={imageStyle}/>
+            }
             <h1>{film.title} ({film.ageRating}) ({genre})</h1>
             <h2>by {film.directorFirstName} {film.directorLastName}</h2>
             <h2>date of release {getDateString()}</h2>
