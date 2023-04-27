@@ -2,19 +2,14 @@
 class Image {
     url: string;
 
-    constructor(data: ArrayBuffer, type: string) {
-        let blob: Blob;
-        if (type === "type/png") {
-            blob = new Blob([data], {type: 'image/png'});
-        } else if (type === 'type/jpeg') {
-            blob = new Blob([data], {type: 'image/jpeg'});
-        } else if (type === 'type/gif') {
-            blob = new Blob([data], {type: 'image/gif'});
-        } else {
-            throw new Error('Image type is invalid.');
-        }
-        const urlCreator  = window.URL || window.webkitURL;
-        this.url = urlCreator.createObjectURL(blob);
+    constructor(data: ArrayBuffer) {
+        const base64 = btoa(
+            new Uint8Array(data).reduce(
+                (data, byte) => data + String.fromCharCode(byte),
+                ''
+            )
+        )
+        this.url = 'data:;base64,' + base64;
     }
 
     getSource() {

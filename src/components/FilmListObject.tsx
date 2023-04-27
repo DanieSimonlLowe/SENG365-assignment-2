@@ -49,15 +49,15 @@ const FilmListObject = (props: IFilmProps) => {
         const getImage = () => {
             axios.get(API_URL+"films/"+film.filmId+"/image", {
                 responseType: 'arraybuffer',
-                headers: {'Content-Type': 'none'}
+                headers: {'content-type': 'none'}
             })
             .then((response) => {
                 try {
-                    const type: string = response.headers['Content-Type'] as string;
-                    if (type === 'none') {
+                    const type: string = response.headers['content-type'] as string;
+                    if (type === undefined || type === 'none') {
                         setHasImage(false);
                     } else {
-                        const image: Image = new Image(response.data,type);
+                        const image: Image = new Image(response.data);
                         setFilmImage(image);
                         setHasImage(true);
                     }
