@@ -133,14 +133,20 @@ const FilmView = () => {
                                     films.push(film);
                                 }
                             })
-                            setSimilarFilms(films);
+
+                            setSimilarFilms(films.filter((film: f.Film) => {
+                                // @ts-ignore
+                                if (film.filmId !== parseInt(id)) {
+                                    return film;
+                                }
+                            }));
                         })
                 })
         }
         if (filmLoaded) {
             getFilms()
         }
-    }, [film,filmLoaded])
+    }, [film,filmLoaded,id])
 
     React.useEffect(() => {
         const getImage = () => {
@@ -191,8 +197,8 @@ const FilmView = () => {
             {filmLoaded?
         <div>
             { hasImage && filmImage instanceof Image ?
-                <img src={filmImage?.getSource()} style={imageStyle}/>:
-                <img src={require("../images/movie.png")} style={imageStyle}/>
+                <img src={filmImage?.getSource()} style={imageStyle} alt={film.title + " hero image"}/>:
+                <img src={require("../images/movie.png")} style={imageStyle} alt={film.title + " hero image"}/>
             }
             <h1>{film.title} ({film.ageRating}) ({genre})</h1>
             <h2>by {film.directorFirstName} {film.directorLastName}</h2>
