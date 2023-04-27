@@ -19,7 +19,11 @@ const LogoutPage = () => {
             setAuthToken("");
             setUserId(-1);
         }, (error) => {
-            if (callBacks < 10) {
+            if (error.response.status === 401) {
+                setAuthToken("");
+                setUserId(-1);
+            }
+            else if (callBacks < 10) {
                 setTimeout(logOut, 500);
                 callBacks += 1;
             } else {
