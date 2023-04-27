@@ -56,11 +56,11 @@ const FilmListObjectLoggedIn = (props: IFilmProps) => {
             })
             .then((response) => {
                 try {
-                    const type: string = response.headers['Content-Type'] as string;
+                    const type: string = response.headers['content-type'] as string;
                     if (type === 'none') {
                         setHasImage(false);
                     } else {
-                        const image: Image = new Image(response.data,type);
+                        const image: Image = new Image(response.data);
                         setFilmImage(image);
                         setHasImage(true);
                     }
