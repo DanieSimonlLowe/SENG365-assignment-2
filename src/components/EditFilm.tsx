@@ -18,6 +18,9 @@ import {Genre} from "../types/genres";
 import axios from "axios";
 import useStore from "../store";
 import {useParams} from "react-router-dom";
+import dayjs ,{Dayjs} from "dayjs";
+import Image from "../classes/images";
+import ImageEditor from "./ImageEditor";
 
 type Film = {
     filmId:number,
@@ -53,7 +56,8 @@ const EditFilm = () => {
 
     const [title, setTitle] = React.useState<string>("");
     const [description, setDescription] = React.useState<string>("");
-    const [date, setDate] = React.useState<Date>(new Date());
+    const now = dayjs(new Date());
+    const [date, setDate] = React.useState<Dayjs | null | undefined>(now);
     const [runtime, setRuntime] = React.useState("");
     const [ageRating, setAgeRating] = React.useState("");
     const [genres, setGenres] = React.useState<Array<Genre>>([]);
@@ -61,6 +65,10 @@ const EditFilm = () => {
 
     const [hasError, setHasError] = React.useState<boolean>(false);
     const [errorMessage, setErrorMessage] = React.useState<string>("");
+    const [hasImage, setHasImage] = React.useState<boolean>(false);
+    const [image, setImage] = React.useState<Image>();
+    const [oldImage, setOldImage] = React.useState<Image>();
+    const [fileType, setFileType] = React.useState("");
 
     const token = useStore(state => state.authToken);
     const userId = useStore(state => state.userId);
@@ -75,6 +83,33 @@ const EditFilm = () => {
         getGenres();
     },[])
 
+    React.useEffect(() => {
+        const getImage = () => {
+            axios.get(API_URL+"films/"+id+"/image", {
+                responseType: 'arraybuffer',
+                headers: {'content-type': 'none'}
+            })
+                .then((response) => {
+                    try {
+                        const type: string = response.headers['content-type'] as string;
+                        if (type === undefined || type === 'none') {
+                            setHasImage(false);
+                        } else {
+                            const image: Image = new Image(response.data);
+                            setImage(image);
+                            setOldImage(image);
+                            setHasImage(true);
+                            setFileType(type);
+                        }
+                    } catch (e) {
+                        setHasImage(false);
+                    }
+                }, (error) => {
+                    setHasImage(false);
+                })
+        }
+        getImage()
+    },[id])
 
     React.useEffect(() => {
         const getFilm = () => {
@@ -88,7 +123,7 @@ const EditFilm = () => {
                         setFilm(data);
                         setTitle(data.title);
                         setDescription(data.description);
-                        setDate(new Date(data.releaseDate));
+                        setDate(dayjs(data.releaseDate));
                         if (data.runtime === null) {
                             setRuntime('');
                         } else {
@@ -107,13 +142,12 @@ const EditFilm = () => {
     }, [id,userId])
 
 
-    const changeDate = (date:(Date|null)) => {
+    const changeDate = (date:(Dayjs|null)) => {
         if (date === null) {
             return;
-        } else if(!isNaN(date.valueOf()) && date.getUTCSeconds() < new Date().getUTCSeconds()) {
+        } else if(!isNaN(date.valueOf()) && date.isAfter(now)) {
             setDate(date);
         }
-
     }
 
     const changeRuntime = (value: string) => {
@@ -139,11 +173,17 @@ const EditFilm = () => {
     }
 
     const getDateString = ():string => {
-        return date.getFullYear() + '-' + toTwoDigit(date.getDate()) + '-' + toTwoDigit(date.getMonth()) + ' ' + toTwoDigit(date.getHours()) + ':' + toTwoDigit(date.getMinutes()) + ':' + toTwoDigit(date.getSeconds());
+        let tempDate: Date;
+        if (date === null || date === undefined) {
+            tempDate = new Date();
+        } else {
+            tempDate = date.toDate();
+        }
+        return tempDate.getFullYear() + '-' + toTwoDigit(tempDate.getMonth()+1) + '-' + toTwoDigit(tempDate.getDate()) + ' ' + toTwoDigit(tempDate.getHours()) + ':' + toTwoDigit(tempDate.getMinutes()) + ':' + toTwoDigit(tempDate.getSeconds());
     }
 
     const submit = () => {
-        if (typeof(film) != "undefined") {
+        if (film === undefined) {
             setHasError(true);
             setErrorMessage("the film is not loaded.")
             return;
@@ -174,25 +214,43 @@ const EditFilm = () => {
         if (ageRating !== film.ageRating) {
             data.ageRating = ageRating;
         }
-        axios.patch(API_URL+"films", data, {headers: {
-                'X-Authorization': token
+        if (Object.keys(data).length !== 0) {
+            axios.patch(API_URL + "films/" + id, data, {
+                headers: {
+                    'X-Authorization': token
+                }
+            }).then((response) => {
+                setHasError(false);
+            }, (error) => {
+                const status: number = error.response.status;
+                setHasError(true);
+                if (status === 400) {
+                    setErrorMessage("invalid input.");
+                } else if (status === 401) {
+                    setErrorMessage("you are not logged in.")
+                } else if (status === 403) {
+                    setErrorMessage("only the director can change an film, and it can't be changed after it has been reviewed.");
+                } else if (status === 404) {
+                    setErrorMessage("can't find the film you are editing in the database.")
+                } else {
+                    setErrorMessage("an internal server error has occurred.")
+                }
+            })
+        }
+        if (fileType === "" || image === undefined || image === null || image === oldImage) {
+            return;
+        }
+        axios.put(API_URL+"films/"+id+"/image",image.data, {
+            headers: {
+                'X-Authorization': token,
+                'content-type': fileType
             }}).then((response) => {
-            setHasError(false);
-        }, (error) => {
-            const status: number = error.response.status;
-            setHasError(true);
-            if (status === 400) {
-                setErrorMessage("invalid input.");
-            } else if (status === 401) {
-                setErrorMessage("you are not logged in.")
-            } else if (status === 403) {
-                setErrorMessage("only the director can change an film, and it can't be changed after it has been reviewed.");
-            } else if (status === 404) {
-                setErrorMessage("can't find the film you are editing to.")
-            } else {
-                setErrorMessage("an internal server error has occurred.")
-            }
-        })
+                setHasError(false);
+            },
+            (error) => {
+                setErrorMessage("failed to upload image, but rest of the film went though");
+                setHasError(true);
+            })
     }
 
     return (
@@ -205,6 +263,9 @@ const EditFilm = () => {
                 noValidate
                 autoComplete="off">
                 <Box sx={{height:10}}/>
+
+                <ImageEditor image={image} setImage={setImage} setFileType={setFileType}/>
+
                 <TextField id="titleInput" label="Title" variant="outlined" onChange={(e) => {setTitle(e.target.value)} } value={title}/>
                 <TextField id="descriptionInput" label="Description" variant="outlined" onChange={(e) => {setDescription(e.target.value)}} value={description}
                            multiline/>
