@@ -5,8 +5,20 @@ import {
 import React from "react";
 import Image from "../classes/images"
 import CSS from "csstype";
+import {VALID_IMAGE_FILE_TYPES} from "../Constantes";
 
-const ImageEditor = (image: (Image|undefined), setImage: (i: Image) => void ) => {
+interface imageProps {
+    image: Image|undefined,
+    setImage: (i: Image) => void
+
+    setFileType: (f: string) => void
+}
+
+const ImageEditor = (props: imageProps ) => {
+    const image: (Image|undefined) = props.image;
+    const setImage: (i: Image) => void = props.setImage;
+    const setFileType: (f: string) => void = props.setFileType;
+
     const [uploading, setUploading] = React.useState(false);
     const [hasError, setHasError] = React.useState(false);
     const [errorMessage, setErrorMessage] = React.useState("");
@@ -40,6 +52,16 @@ const ImageEditor = (image: (Image|undefined), setImage: (i: Image) => void ) =>
             } else {
                 setUploading(true);
                 const file:File = input.files[0];
+                if ( VALID_IMAGE_FILE_TYPES.includes(file.type) ) {
+                    console.log(file.type);
+                    setFileType(file.type)
+                } else {
+                    setUploading(false);
+                    setHasError(true);
+                    setErrorMessage("invalid file type can only be png, gif or jpeg");
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     // @ts-ignore
@@ -61,7 +83,8 @@ const ImageEditor = (image: (Image|undefined), setImage: (i: Image) => void ) =>
                 component="label"
             >
                 {get_image()}
-                Upload File
+                <br/>
+                <span>Upload File</span>
                 <input
                     type="file"
                     hidden
@@ -75,3 +98,6 @@ const ImageEditor = (image: (Image|undefined), setImage: (i: Image) => void ) =>
         </div>
     )
 }
+
+
+export default ImageEditor;

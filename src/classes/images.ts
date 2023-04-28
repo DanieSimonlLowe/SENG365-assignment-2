@@ -1,6 +1,7 @@
 
 class Image {
     url: string;
+    data: ArrayBuffer
 
     constructor(data: ArrayBuffer) {
         const base64 = btoa(
@@ -9,6 +10,7 @@ class Image {
                 ''
             )
         )
+        this.data = data;
         this.url = 'data:;base64,' + base64;
     }
 

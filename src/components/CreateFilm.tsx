@@ -17,6 +17,8 @@ import React from "react";
 import {Genre} from "../types/genres";
 import axios from "axios";
 import useStore from "../store";
+import ImageEditor from "./ImageEditor";
+import Image from "../classes/images";
 
 const CreateFilm = () => {
     const [title, setTitle] = React.useState("");
@@ -31,6 +33,8 @@ const CreateFilm = () => {
 
     const [hasError, setHasError] = React.useState<boolean>(false);
     const [errorMessage, setErrorMessage] = React.useState<string>("has some error");
+    const [image, setImage] = React.useState<Image>();
+    const [fileType, setFileType] = React.useState<string>("")
 
     const token = useStore(state => state.authToken);
 
@@ -103,10 +107,12 @@ const CreateFilm = () => {
                 "ageRating": ageRating
             }
         }
+        let id = -1;
         axios.post(API_URL+"films", data, {
             headers: {
                 'X-Authorization': token
         }}).then((response) => {
+            id = response.data.filmId;
             setHasError(false);
         }, (error) => {
             const status: number = error.response.status;
@@ -120,6 +126,21 @@ const CreateFilm = () => {
             } else {
                 setErrorMessage("Server Error.")
             }
+        }).then((r) => {
+            if (hasError || fileType === "" || image === undefined || id === -1) {
+                return;
+            }
+            axios.put("/film/"+id+"/image",image.data, {
+                headers: {
+                    'X-Authorization': token,
+                    'content-type': fileType
+                }}).then((response) => {
+                    setHasError(false);
+                },
+                (error) => {
+                    setErrorMessage("failed to upload image, but rest of the film went though");
+                    setHasError(true);
+                })
         })
     }
 
@@ -133,6 +154,9 @@ const CreateFilm = () => {
                 noValidate
                 autoComplete="off">
                 <Box sx={{height:10}}/>
+
+                <ImageEditor image={image} setImage={setImage} setFileType={setFileType}/>
+
                 <TextField id="titleInput" label="Title" variant="outlined" onChange={(e) => {setTitle(e.target.value)} }/>
                 <TextField id="descriptionInput" label="Description" variant="outlined" onChange={(e) => {setDescription(e.target.value)} }
                 multiline/>
