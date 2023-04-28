@@ -19,12 +19,13 @@ import axios from "axios";
 import useStore from "../store";
 import ImageEditor from "./ImageEditor";
 import Image from "../classes/images";
+import dayjs ,{Dayjs} from "dayjs";
 
 const CreateFilm = () => {
     const [title, setTitle] = React.useState("");
     const [description, setDescription] = React.useState("");
-    const now = new Date();
-    const [date, setDate] = React.useState<Date>(now);
+    const now = dayjs(new Date());
+    const [date, setDate] = React.useState<Dayjs|null>(now);
     const [runtime, setRuntime] = React.useState("");
     const [ageRating, setAgeRating] = React.useState('TBC');
 
@@ -53,10 +54,10 @@ const CreateFilm = () => {
         getGenres();
     },[])
 
-    const changeDate = (date:(Date|null)) => {
+    const changeDate = (date:(Dayjs|null)) => {
         if (date === null) {
             return;
-        } else if(true && !isNaN(date.valueOf()) && date.getUTCMilliseconds() > now.getUTCMilliseconds()) {
+        } else if(!isNaN(date.valueOf()) && date.isAfter(now)) {
             setDate(date);
         }
     }
@@ -84,7 +85,13 @@ const CreateFilm = () => {
     }
 
     const getDateString = ():string => {
-        return date.getFullYear() + '-' + toTwoDigit(date.getDate()) + '-' + toTwoDigit(date.getMonth()) + ' ' + toTwoDigit(date.getHours()) + ':' + toTwoDigit(date.getMinutes()) + ':' + toTwoDigit(date.getSeconds());
+        let tempDate: Date;
+        if (date === null) {
+            tempDate = new Date();
+        } else {
+            tempDate = date.toDate();
+        }
+        return tempDate.getFullYear() + '-' + toTwoDigit(tempDate.getMonth()+1) + '-' + toTwoDigit(tempDate.getDate()) + ' ' + toTwoDigit(tempDate.getHours()) + ':' + toTwoDigit(tempDate.getMinutes()) + ':' + toTwoDigit(tempDate.getSeconds());
     }
 
     const submit = () => {
@@ -107,6 +114,7 @@ const CreateFilm = () => {
                 "ageRating": ageRating
             }
         }
+
         let id = -1;
         axios.post(API_URL+"films", data, {
             headers: {
@@ -130,7 +138,7 @@ const CreateFilm = () => {
             if (hasError || fileType === "" || image === undefined || id === -1) {
                 return;
             }
-            axios.put("/film/"+id+"/image",image.data, {
+            axios.put(API_URL+"films/"+id+"/image",image.data, {
                 headers: {
                     'X-Authorization': token,
                     'content-type': fileType
