@@ -75,13 +75,25 @@ const FilmListObjectLoggedIn = (props: IFilmProps) => {
     },[film])
 
     const deleteFilm = () => {
-        axios.delete(API_URL+"films/"+film.filmId, {
+        axios.delete(API_URL+"films/"+film.filmId+"/image", {
             headers: {
                 'X-Authorization': token
             }})
             .then((response) => {
-                window.location.reload();
-            });
+
+            }, (error) => {
+
+            }).then((r) => {
+
+                axios.delete(API_URL+"films/"+film.filmId, {
+                    headers: {
+                        'X-Authorization': token
+                    }})
+                    .then((response) => {
+                        window.location.reload();
+                    });
+        })
+
     }
 
     return (
