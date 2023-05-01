@@ -1,4 +1,4 @@
-import {Card, CardContent, CardMedia, Typography} from "@mui/material";
+import {Card, CardContent, CardMedia, Typography, Box} from "@mui/material";
 import {Review} from "../types/reviews";
 import CSS from "csstype";
 import Image from "../classes/images";
@@ -55,28 +55,30 @@ const ReviewObject = (props: IReviewProps) => {
 
     return (
         <Card sx={reviewCardStyles}>
-        { hasImage && image instanceof Image ?
-            <CardMedia component="img"
+            { hasImage && image instanceof Image ?
+                <CardMedia component="img"
                        height="100"
                        width="100"
                        sx={imageStyles}
                        image = {image.getSource()}
                        alt={props.review.reviewerFirstName + " " + props.review.reviewerLastName+" profile"}/>
-            :
-            <CardMedia component="img"
+                :
+                <CardMedia component="img"
                        height="100"
                        width="100"
                        sx={imageStyles}
                        image = {require("../images/profile.jpg")}
                        alt={props.review.reviewerFirstName + " " + props.review.reviewerLastName+" profile"}/>
-        }
-        <CardContent>
-            <div>
-                <Typography variant="h5" component="h5">{props.review.reviewerFirstName + " " + props.review.reviewerLastName + " : " + props.review.rating + "/10"}</Typography>
-                <Typography variant="body1">{props.review.review}</Typography>
-            </div>
-        </CardContent>
-    </Card>)
+            }
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <CardContent>
+                    <div>
+                        <Typography variant="h5" component="h5">{props.review.reviewerFirstName + " " + props.review.reviewerLastName + " : " + props.review.rating + "/10"}</Typography>
+                        <Typography variant="body1">{props.review.review}</Typography>
+                    </div>
+                </CardContent>
+            </Box>
+        </Card>)
 }
 
 export default ReviewObject;

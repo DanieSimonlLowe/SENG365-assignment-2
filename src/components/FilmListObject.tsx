@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, CardContent, CardMedia, CardActionArea, Typography} from "@mui/material";
+import {Card, CardContent, CardMedia, CardActionArea, Typography, Box} from "@mui/material";
 import CSS from 'csstype'
 import {Film} from "../types/films";
 import {API_URL} from "../Constantes";
@@ -90,14 +90,16 @@ const FilmListObject = (props: IFilmProps) => {
                            image = {require("../images/movie.png")}
                            alt={film.title+" hero image"}/>
                 }
-                <CardContent>
-                    <div>
-                        <Typography variant="h3" component="h3">{film.title}</Typography>
-                        <Typography variant="h4" component="h4">{"by "+film.directorFirstName+" "+film.directorLastName}</Typography>
-                        <Typography variant="h5" component="h5">{"age rating "+film.ageRating+" genre: "+film.genreId+" released on: "+ filmDate +" rated: "+film.rating}</Typography>
-                        <Typography variant="body1">{film.description}</Typography>
-                    </div>
-                </CardContent>
+                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <CardContent>
+                        <div>
+                            <Typography variant="h3" component="h3">{film.title}</Typography>
+                            <Typography variant="h4" component="h4">{"by "+film.directorFirstName+" "+film.directorLastName}</Typography>
+                            <Typography variant="h5" component="h5">{"age rating "+film.ageRating+" genre: "+film.genreId+" released on: "+ filmDate +" rated: "+film.rating}</Typography>
+                            <Typography variant="body1">{film.description}</Typography>
+                        </div>
+                    </CardContent>
+                </Box>
             </CardActionArea>
         </Card>
     )
