@@ -9,7 +9,8 @@ interface  IReviewProps {
     dirId: number,
     filmId: number,
     relDate: string,
-    reviews: Array<Review>
+    reviews: Array<Review>,
+    update: () => void
 }
 
 const ReviewFrom = (props: IReviewProps) => {
@@ -37,7 +38,7 @@ const ReviewFrom = (props: IReviewProps) => {
             setErrorMessage("you must be logged in to review a film.");
             setErrorType("info");
             return;
-        } else if (new Date(props.relDate).getUTCMilliseconds() <= Date.now()) {
+        } else if (new Date(props.relDate).getUTCMilliseconds() > Date.now()) {
             setErrorFlag(true);
             setErrorMessage("can't review a film until it has been released.");
             setErrorType("info");
@@ -56,17 +57,20 @@ const ReviewFrom = (props: IReviewProps) => {
         if (review !== "") {
             data.review = review;
         }
+        let succeed = false;
         console.log(data);
-        axios.post(API_URL+"films/" + props.filmId + "/review", data, {
+        axios.post(API_URL+"films/" + props.filmId + "/reviews", data, {
             headers: {
                 'X-Authorization': token
             }})
             .then((response) => {
+                succeed = true;
                 setErrorFlag(false);
             }, (error) => {
                 setErrorFlag(true);
                 setErrorType("error");
-                const status: number = error.status;
+                console.log(error);
+                const status: number = error.response.status;
                 if (status === 400) {
                     setErrorMessage("invalid information failed to submit.");
                 } else if (status === 401) {
@@ -78,8 +82,11 @@ const ReviewFrom = (props: IReviewProps) => {
                 } else {
                     setErrorMessage("some server error has occurred.");
                 }
-            })
-
+            }).then((r)=> {
+                if (succeed) {
+                    props.update();
+                }
+        })
     }
     return (
         <div>

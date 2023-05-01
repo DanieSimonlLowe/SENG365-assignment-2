@@ -64,6 +64,8 @@ const FilmView = () => {
     const [similarFilms, setSimilarFilms] = React.useState<Array<f.Film>>([]);
     const [filmImage, setFilmImage] = React.useState<Image>();
     const [hasImage, setHasImage] = React.useState(false);
+    const [reviewsHasUpdated, setReviewsHasUpdated] = React.useState(true);
+    const [numberOfRatings, setNumberOfRatings] = React.useState(-1);
 
 
     React.useEffect(() => {
@@ -101,6 +103,7 @@ const FilmView = () => {
         const getReviews = () => {
             axios.get(API_URL+"films/" + id+"/reviews")
                 .then((response) => {
+                    setNumberOfRatings(response.data.length);
                     setReviews(response.data.filter((review:Review) => {
                         try {
                             return review.review.length > 0;
@@ -110,8 +113,11 @@ const FilmView = () => {
                     }));
                 })
         }
-        getReviews();
-    }, [id])
+        if (reviewsHasUpdated || numberOfRatings === -1) {
+            getReviews();
+            setReviewsHasUpdated(false);
+        }
+    }, [id, reviewsHasUpdated])
 
     React.useEffect(() => {
         const getFilms = () => {
@@ -204,9 +210,9 @@ const FilmView = () => {
             <h2>by {film.directorFirstName} {film.directorLastName}</h2>
             <h2>date of release {getDateString()}</h2>
             <h2>run time {film.runtime}</h2>
-            <h2>average rating {film.rating}, number of ratings {film.numRatings}</h2>
+            <h2>average rating {film.rating}, number of ratings {numberOfRatings}</h2>
             <p>{film.description}</p>
-            <ReviewFrom dirId={film.directorId} filmId={film.filmId} relDate={film.releaseDate} reviews={reviews}/>
+            <ReviewFrom dirId={film.directorId} filmId={film.filmId} relDate={film.releaseDate} reviews={reviews} update={() => {setReviewsHasUpdated(true)}} />
             {reviews.length > 0?
             <Paper elevation={3} style={cardStyle}>
                 <div style={{display: "inline-block", maxWidth: "965", minWidth: "320"}}>
