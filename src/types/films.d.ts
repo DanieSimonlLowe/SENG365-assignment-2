@@ -7,7 +7,7 @@ export type Film = {
     directorFirstName: string,
     directorLastName: string,
 
-    rating: number
-    genreId: Number,
+    rating: number,
+    genreId: number,
     ageRating: string
 }

@@ -61,6 +61,7 @@ const FilmView = () => {
     const [reviews, setReviews] = React.useState<Array<Review>>([]);
 
     const [genre, setGenre] = React.useState("");
+    const [genres, setGenres] = React.useState<Array<Genre>>([]);
     const [similarFilms, setSimilarFilms] = React.useState<Array<f.Film>>([]);
     const [filmImage, setFilmImage] = React.useState<Image>();
     const [hasImage, setHasImage] = React.useState(false);
@@ -85,6 +86,7 @@ const FilmView = () => {
         const getGenre = () => {
             axios.get(API_URL+"films/genres")
                 .then((response) => {
+                    setGenres(response.data);
                     response.data.forEach((genre: Genre) => {
                         if (genre.genreId === film?.genreId) {
                             setGenre(genre.name);
@@ -195,7 +197,7 @@ const FilmView = () => {
     )
 
     const films_rows = () => similarFilms.map((film: f.Film) =>
-        <FilmListObject film={film} key={"similarFilm"+film.filmId}/>
+        <FilmListObject film={film} key={"similarFilm"+film.filmId} genres={genres} />
     )
 
     return (

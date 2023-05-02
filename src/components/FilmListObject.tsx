@@ -6,8 +6,11 @@ import {API_URL} from "../Constantes";
 import axios from "axios";
 import Image from "../classes/images";
 import { Link } from 'react-router-dom'
+import {Genre} from "../types/genres";
+
 interface  IFilmProps {
-    film: Film
+    film: Film,
+    genres: Array<Genre>
 }
 
 const FilmListObject = (props: IFilmProps) => {
@@ -71,6 +74,16 @@ const FilmListObject = (props: IFilmProps) => {
         getImage()
     },[film])
 
+    const getGenre = (id: number) => {
+        const temp = props.genres.find((gen) => {
+            return gen.genreId === id;
+        });
+        if (temp === undefined) {
+            return "invalid genre";
+        } else {
+            return temp.name;
+        }
+    }
 
     return (
         <Card sx={filmCardStyles}>
@@ -95,7 +108,7 @@ const FilmListObject = (props: IFilmProps) => {
                         <div>
                             <Typography variant="h3" component="h3">{film.title}</Typography>
                             <Typography variant="h4" component="h4">{"by "+film.directorFirstName+" "+film.directorLastName}</Typography>
-                            <Typography variant="h5" component="h5">{"age rating "+film.ageRating+" genre: "+film.genreId+" released on: "+ filmDate +" rated: "+film.rating}</Typography>
+                            <Typography variant="h5" component="h5">{"age rating "+film.ageRating+" genre: "+getGenre(film.genreId)+" released on: "+ filmDate +" rated: "+film.rating}</Typography>
                             <Typography variant="body1">{film.description}</Typography>
                         </div>
                     </CardContent>

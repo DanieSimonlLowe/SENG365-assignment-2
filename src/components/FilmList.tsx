@@ -105,6 +105,7 @@ const FilmList = () => {
     const [onlyAllowOwn, setOnlyAllowOwn] = React.useState(false);
 
     const [genreFilters, setGenreFilters] = React.useState<Array<Filter>>([]);
+    const [genres, setGenres] = React.useState<Array<Genre>>([]);
     const [ageFilters, setAgeFilters] = React.useState<Array<Filter>>(
         AGE_RATINGS.map((value:string, index:number) => {
             return {
@@ -241,6 +242,7 @@ const FilmList = () => {
                         } as Filter
                     })
                     setGenreFilters(filters);
+                    setGenres(response.data);
                 })
         }
         getGenres();
@@ -256,9 +258,9 @@ const FilmList = () => {
 
     const films_rows = () => { return films.map((film:Film) => {
             if (film.directorId === userId) {
-                return (<FilmListObjectLoggedIn key={"film" + film.filmId} film={film}/>)
+                return (<FilmListObjectLoggedIn key={"film" + film.filmId} film={film} genres={genres}/>)
             } else {
-                return (<FilmListObject key={"film" + film.filmId} film={film}/>)
+                return (<FilmListObject key={"film" + film.filmId} film={film}  genres={genres}/>)
             }
     })};
 
