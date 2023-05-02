@@ -298,12 +298,23 @@ const FilmList = () => {
         }
     }
 
+    const getFilterValue = (filters: Array<Filter>, id: number) : boolean => {
+        const filter : Filter | undefined = filters.find((value) => {
+            return value.id === id;
+        });
+        if (filter === undefined) {
+            return false;
+        } else {
+            return filter.active;
+        }
+    }
+
     const genre_filters = () => genreFilters.map((genre: Filter) =>
-        <FormControlLabel id={"genreFilter"+genre.id} key={"genreFilter"+genre.id} control={<Checkbox/>} label={genre.name} onChange={bindGenreFilter(genre.id)} />
+        <FormControlLabel id={"genreFilter"+genre.id} key={"genreFilter"+genre.id} control={<Checkbox checked={getFilterValue(genreFilters,genre.id)}/>} label={genre.name} onChange={bindGenreFilter(genre.id)} />
     );
 
     const age_filters = () => ageFilters.map((age: Filter) =>
-        <FormControlLabel id={"ageFilter"+age.id} key={"ageFilter"+age.id} control={<Checkbox/>} label={age.name} onChange={bindAgeFilter(age.id)} />
+        <FormControlLabel id={"ageFilter"+age.id} key={"ageFilter"+age.id} control={<Checkbox checked={getFilterValue(ageFilters,age.id)}/>} label={age.name} onChange={bindAgeFilter(age.id)}/>
     );
 
     const openGenreFilterDialog = () => {
