@@ -39,6 +39,7 @@ const LogoutPage = () => {
 
     return (
         <Box textAlign='center' >
+            <Box sx={{height:'40ex'}}/>
             {hasError? <Alert severity="error">failed to log out please try agin.</Alert> : ""}
             <Button variant='contained' onClick={logOutButton}>
                 Log Out
