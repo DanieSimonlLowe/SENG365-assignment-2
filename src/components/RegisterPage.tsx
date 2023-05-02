@@ -3,6 +3,8 @@ import React from "react";
 import axios from "axios";
 import {API_URL} from "../Constantes";
 import useStore from "../store";
+import ImageEditor from "./ImageEditor";
+import Image from "../classes/images"
 
 const RegisterPage = () => {
     const [firstName, setFirstName] = React.useState("");
@@ -13,9 +15,14 @@ const RegisterPage = () => {
     const [errorMessage, setErrorMessage] = React.useState("");
     const [success, setSuccess] = React.useState(false);
 
+    const [image,setImage] = React.useState<Image>();
+    const [fileType, setFileType] = React.useState("");
+
     const setAuthToken = useStore(state => state.setAuthToken);
     const setUserId = useStore(state => state.setUserId);
     const register = () => {
+        let token: string = "";
+        let userId: number = 0;
         axios.post(API_URL + "users/register", {
             firstName: firstName,
             lastName: lastName,
@@ -23,13 +30,14 @@ const RegisterPage = () => {
             password: password
         }).then((response) => {
             try {
-                const userId: number = response.data.userId;
+                userId = response.data.userId;
                 axios.post(API_URL + "users/login", {
                     email: email,
                     password: password
                 }).then((response) => {
                     try {
-                        setAuthToken(response.data.token);
+                        token = response.data.token;
+                        setAuthToken(token);
                         setUserId(userId);
                         setSuccess(true);
                         setHasError(false);
@@ -40,6 +48,25 @@ const RegisterPage = () => {
                 }, (error) => {
                     setHasError(true);
                     setErrorMessage("failed to login")
+                }).then((r) => {
+                    console.log(token + " " + fileType);
+                    if (token === "" || fileType === "" || image === undefined || image === null) {
+                        return;
+                    }
+                    console.log("run");
+                    axios.put(API_URL+"users/"+userId+"/image",image.data, {
+                        headers: {
+                            'X-Authorization': token,
+                            'content-type': fileType
+                        }}).then((response) => {
+                            setHasError(false);
+                        },
+                        (error) => {
+                            if (!hasError) {
+                                setErrorMessage("failed to upload image, but rest of the film went though");
+                            }
+                            setHasError(true);
+                        });
                 })
             } catch {
                 setHasError(true);
@@ -68,6 +95,7 @@ const RegisterPage = () => {
                 autoComplete="off"
             >
                 <Box sx={{height:30}}/>
+                <ImageEditor image={image} setImage={setImage} setFileType={setFileType} defaultImage={"profile.jpg"}/>
                 <TextField id="firstNameInput" label="First Name" variant="outlined" onChange={(e) => {setFirstName(e.target.value)} }/>
                 <TextField id="lastNameInput" label="Last Name" variant="outlined" onChange={(e) => {setLastName(e.target.value)}}/>
                 <TextField id="emailInput" label="Email" variant="outlined" onChange={(e) => {setEmail(e.target.value)}}/>
