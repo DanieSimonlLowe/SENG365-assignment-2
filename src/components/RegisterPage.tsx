@@ -1,4 +1,4 @@
-import {TextField,Button,Alert,Stack, Box} from "@mui/material"
+import {TextField, Button, Alert, Stack, Box, Checkbox, FormControlLabel} from "@mui/material"
 import React from "react";
 import axios from "axios";
 import {API_URL} from "../Constantes";
@@ -17,6 +17,8 @@ const RegisterPage = () => {
 
     const [image,setImage] = React.useState<Image>();
     const [fileType, setFileType] = React.useState("");
+
+    const [showPassword, setShowPassword] = React.useState(false);
 
     const setAuthToken = useStore(state => state.setAuthToken);
     const setUserId = useStore(state => state.setUserId);
@@ -99,7 +101,12 @@ const RegisterPage = () => {
                 <TextField id="firstNameInput" label="First Name" variant="outlined" onChange={(e) => {setFirstName(e.target.value)} }/>
                 <TextField id="lastNameInput" label="Last Name" variant="outlined" onChange={(e) => {setLastName(e.target.value)}}/>
                 <TextField id="emailInput" label="Email" variant="outlined" onChange={(e) => {setEmail(e.target.value)}}/>
-                <TextField id="passwordInput" label="Password" type="password" variant="outlined" onChange={(e) => {setPassword(e.target.value)}}/>
+                {showPassword?
+                    <TextField id="passwordInput" label="Password" variant="outlined" onChange={(e) => {setPassword(e.target.value)}}/>:
+                    <TextField id="passwordInput" label="Password" type="password" variant="outlined" onChange={(e) => {setPassword(e.target.value)}}/>
+                }
+
+                <FormControlLabel control={<Checkbox checked={showPassword}/>} label={"show password: "} onChange={(e: React.SyntheticEvent, checked: boolean) => {setShowPassword(checked)}}/>
                 <Button variant="contained" onClick={register}>Register</Button>
                 {success? <Alert severity="success">successfully registered and logged in</Alert>: ""}
                 {hasError? <Alert severity="error">{errorMessage}</Alert> : ""}
