@@ -12,6 +12,8 @@ interface imageProps {
     setImage: (i: Image) => void
 
     setFileType: (f: string) => void
+
+    defaultImage: string
 }
 
 const ImageEditor = (props: imageProps ) => {
@@ -30,8 +32,8 @@ const ImageEditor = (props: imageProps ) => {
     const get_image = () => {
         if (uploading) {
             return <CircularProgress style={imageStyle}/>
-        }else if (image === undefined) {
-            return <img src={require("../images/movie.png")} style={imageStyle} alt="current image (click to change image)"/>
+        } else if (image === undefined || image == null || image.data == null) {
+            return <img src={require("../images/"+props.defaultImage)} style={imageStyle} alt="current image (click to change image)"/>
         } else {
             return <img src={image?.getSource()} style={imageStyle} alt="current image (click to change image)"/>
         }

@@ -3,6 +3,8 @@ import axios from "axios";
 import {API_URL} from "../Constantes";
 import useStore from "../store";
 import {Alert, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Stack, Box} from "@mui/material";
+import ImageEditor from "./ImageEditor";
+import Image from "../classes/images"
 
 const UserEdit = () => {
     const userId = useStore(state => state.userId);
@@ -26,6 +28,9 @@ const UserEdit = () => {
     React.useEffect(() => {
         openRef.current = open;
     }, [open]);
+    let [image, setImage] = React.useState<Image>();
+    const [fileType, setFileType] = React.useState("");
+    const [oldImage, setOldImage] = React.useState<Image>();
 
     React.useEffect(() => {
         const getUser = () => {
@@ -45,8 +50,49 @@ const UserEdit = () => {
         getUser();
     }, [userId])
 
+    React.useEffect(() => {
+        const getImage = () => {
+            axios.get(API_URL+"users/"+userId+"/image", {
+                responseType: 'arraybuffer',
+                headers: {'content-type': 'none'}
+            })
+                .then((response) => {
+                    try {
+                        const type: string = response.headers['content-type'] as string;
+                        if (type !== undefined && type !== 'none') {
+                            let temp: Image = new Image(response.data);
+                            setImage(temp);
+                            setOldImage(temp);
+                        }
+                    } catch (e) {
+
+                    }
+                }, (error) => {
+
+                })
+        }
+        getImage()
+    },[userId])
+
 
     const submit = () => {
+        if (fileType !== "" && image !== undefined && image !== null && image !== oldImage) {
+            axios.put(API_URL+"users/"+userId+"/image",image.data, {
+                headers: {
+                    'X-Authorization': token,
+                    'content-type': fileType
+                }}).then((response) => {
+                    setHasError(false);
+                },
+                (error) => {
+                    if (!hasError) {
+                        setErrorMessage("failed to upload image, but rest of the film went though");
+                    }
+                    setHasError(true);
+                });
+        }
+
+
         let data: { [id:string] : (string|number); } = {};
         if (oldEmail !== email) {
             data.email = email;
@@ -118,11 +164,13 @@ const UserEdit = () => {
         } else {
             setTimeout(runPatch,0);
         }
+
     }
 
     return (
         <Stack component="div" spacing={2}>
             <Box sx={{height:30}}/>
+            <ImageEditor image={image} setImage={setImage} setFileType={setFileType} defaultImage={"profile.jpg"}/>
             <TextField id="outlined-basic" type="email" label="Email" variant="outlined" value={email} onChange={(e) => {setEmail(e.target.value)}}/>
             <TextField id="outlined-basic" label="First Name" variant="outlined" value={firstName} onChange={(e) => {setFirstName(e.target.value)}}/>
             <TextField id="outlined-basic" label="Last Name" variant="outlined" value={lastName} onChange={(e) => {setLastName(e.target.value)}}/>

@@ -163,7 +163,7 @@ const CreateFilm = () => {
                 autoComplete="off">
                 <Box sx={{height:10}}/>
 
-                <ImageEditor image={image} setImage={setImage} setFileType={setFileType}/>
+                <ImageEditor image={image} setImage={setImage} setFileType={setFileType} defaultImage={"movie.png"}/>
 
                 <TextField id="titleInput" label="Title" variant="outlined" onChange={(e) => {setTitle(e.target.value)} }/>
                 <TextField id="descriptionInput" label="Description" variant="outlined" onChange={(e) => {setDescription(e.target.value)} }

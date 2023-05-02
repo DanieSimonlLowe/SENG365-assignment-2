@@ -182,6 +182,14 @@ const EditFilm = () => {
         return tempDate.getFullYear() + '-' + toTwoDigit(tempDate.getMonth()+1) + '-' + toTwoDigit(tempDate.getDate()) + ' ' + toTwoDigit(tempDate.getHours()) + ':' + toTwoDigit(tempDate.getMinutes()) + ':' + toTwoDigit(tempDate.getSeconds());
     }
 
+    const getRunTime = () => {
+        if (film.runtime === null) {
+            return "";
+        } else {
+            return film.runtime.toString();
+        }
+    }
+
     const submit = () => {
         if (film === undefined) {
             setHasError(true);
@@ -207,7 +215,7 @@ const EditFilm = () => {
             data.genreId = genre;
         }
         // @ts-ignore
-        if (runtime !== film.runtime.toString() && runtime !== '') {
+        if (runtime !== getRunTime() && runtime !== '') {
             data.runtime = parseInt(runtime);
         }
         // @ts-ignore
@@ -264,7 +272,7 @@ const EditFilm = () => {
                 autoComplete="off">
                 <Box sx={{height:10}}/>
 
-                <ImageEditor image={image} setImage={setImage} setFileType={setFileType}/>
+                <ImageEditor image={image} setImage={setImage} setFileType={setFileType} defaultImage={"movie.png"}/>
 
                 <TextField id="titleInput" label="Title" variant="outlined" onChange={(e) => {setTitle(e.target.value)} } value={title}/>
                 <TextField id="descriptionInput" label="Description" variant="outlined" onChange={(e) => {setDescription(e.target.value)}} value={description}
