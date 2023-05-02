@@ -106,13 +106,7 @@ const FilmView = () => {
             axios.get(API_URL+"films/" + id+"/reviews")
                 .then((response) => {
                     setNumberOfRatings(response.data.length);
-                    setReviews(response.data.filter((review:Review) => {
-                        try {
-                            return review.review.length > 0;
-                        } catch (e) {
-                            return false;
-                        }
-                    }));
+                    setReviews(response.data);
                 })
         }
         if (reviewsHasUpdated || numberOfRatings === -1) {
