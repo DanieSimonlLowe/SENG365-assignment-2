@@ -28,9 +28,9 @@ const LoginPage = () => {
             }
         }, (error) => {
             setHasError(true);
-            if (error.status === 400) {
+            if (error.response.status === 400) {
                 setErrorMessage("invalid login input")
-            } else if (error.status === 401) {
+            } else if (error.response.status === 401) {
                 setErrorMessage("the password or the email are wrong.")
             } else {
                 setErrorMessage("Internal Server Error")
