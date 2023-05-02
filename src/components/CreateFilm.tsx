@@ -25,7 +25,7 @@ const CreateFilm = () => {
     const [title, setTitle] = React.useState("");
     const [description, setDescription] = React.useState("");
     const now = dayjs(new Date());
-    const [date, setDate] = React.useState<Dayjs|null>(now);
+    const [date, setDate] = React.useState<Dayjs|null>(null);
     const [runtime, setRuntime] = React.useState("");
     const [ageRating, setAgeRating] = React.useState('TBC');
 
@@ -95,24 +95,24 @@ const CreateFilm = () => {
     }
 
     const submit = () => {
-        let data;
-        if (runtime === '') {
-            data = {
-                "title": title,
-                "description": description,
-                "releaseDate": getDateString(),
-                "genreId": genre,
-                "ageRating": ageRating
-            }
-        } else {
-            data = {
-                "title": title,
-                "description": description,
-                "releaseDate": getDateString(),
-                "genreId": genre,
-                "runtime": parseInt(runtime),
-                "ageRating": ageRating
-            }
+        if (title === "" || description === "" || fileType === "" || image === undefined) {
+            setHasError(true);
+            setErrorMessage("you must provide an title, image and description.");
+            return;
+        }
+        setHasError(false);
+        let data: { [id:string] : (string|number); };
+        data = {
+            "title": title,
+            "description": description,
+            "genreId": genre,
+            "ageRating": ageRating
+        }
+        if (runtime !== '') {
+            data.runtime = parseInt(runtime);
+        }
+        if (date !== null) {
+            data.releaseDate = getDateString();
         }
 
         let id = -1;
@@ -135,7 +135,7 @@ const CreateFilm = () => {
                 setErrorMessage("Server Error.")
             }
         }).then((r) => {
-            if (hasError || fileType === "" || image === undefined || id === -1) {
+            if (hasError || id === -1) {
                 return;
             }
             axios.put(API_URL+"films/"+id+"/image",image.data, {
