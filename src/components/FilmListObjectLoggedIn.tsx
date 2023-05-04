@@ -5,8 +5,7 @@ import {Film} from "../types/films";
 import {API_URL} from "../Constantes";
 import axios from "axios";
 import Image from "../classes/images";
-import { Link } from 'react-router-dom'
-import useStore from "../store";
+import {Link, useNavigate} from 'react-router-dom'
 import {Genre} from "../types/genres";
 interface  IFilmProps {
     film: Film,
@@ -20,8 +19,7 @@ const FilmListObjectLoggedIn = (props: IFilmProps) => {
 
     const [filmImage, setFilmImage] = React.useState<Image>();
     const [hasImage, setHasImage] = React.useState(false);
-
-    const token = useStore(state => state.authToken);
+    const navigate = useNavigate();
 
     const filmCardStyles: CSS.Properties = {
         display: "inline-block",
@@ -77,24 +75,7 @@ const FilmListObjectLoggedIn = (props: IFilmProps) => {
     },[film])
 
     const deleteFilm = () => {
-        axios.delete(API_URL+"films/"+film.filmId+"/image", {
-            headers: {
-                'X-Authorization': token
-            }})
-            .then((response) => {
-
-            }, (error) => {
-
-            }).then((r) => {
-
-                axios.delete(API_URL+"films/"+film.filmId, {
-                    headers: {
-                        'X-Authorization': token
-                    }})
-                    .then((response) => {
-                        window.location.reload();
-                    });
-        })
+        navigate("/delete/" + film.filmId);
 
     }
 

@@ -13,6 +13,7 @@ import CreateFilm from "./components/CreateFilm";
 import EditFilm from "./components/EditFilm"
 import UserView from "./components/UserView"
 import UserEdit from "./components/UserEdit"
+import DeleteFilm from "./components/DeleteFilm";
 
 function App() {
     const userId = useStore(state => state.userId);
@@ -40,6 +41,7 @@ function App() {
                           <Route path="/films/:p" element={<FilmList/>}/>
                           <Route path="/film/:id" element={<FilmView/>}/>
                           <Route path="/edit/:id" element={<EditFilm/>}/>
+                          <Route path="/delete/:id" element={<DeleteFilm/>}/>
                           <Route path="/profile/edit" element={<UserEdit/>}/>
                           <Route path="/profile" element={<UserView/>}/>
                           <Route path="*" element={<NotFound/>}/>
