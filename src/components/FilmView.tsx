@@ -42,6 +42,10 @@ const FilmView = () => {
         maxHeight: "40vh"
     }
 
+    const smallImageStyle: CSS.Properties = {
+        maxHeight: "12vh"
+    }
+
     const {id} = useParams();
     const [film, setFilm] = React.useState<Film>({
         ageRating: "",
@@ -65,9 +69,39 @@ const FilmView = () => {
     const [similarFilms, setSimilarFilms] = React.useState<Array<f.Film>>([]);
     const [filmImage, setFilmImage] = React.useState<Image>();
     const [hasImage, setHasImage] = React.useState(false);
+    const [dirImage, setDirImage] = React.useState<Image>();
+    const [hasDirImage, setHasDirImage] = React.useState(false);
+
     const [reviewsHasUpdated, setReviewsHasUpdated] = React.useState(true);
     const [numberOfRatings, setNumberOfRatings] = React.useState(-1);
 
+    React.useEffect(() => {
+        const getImage = () => {
+            axios.get(API_URL+"users/"+film.directorId+"/image", {
+                responseType: 'arraybuffer',
+                headers: {'content-type': 'none'}
+            })
+                .then((response) => {
+                    try {
+                        const type: string = response.headers['content-type'] as string;
+                        if (type === undefined || type === 'none') {
+                            setHasDirImage(false);
+                        } else {
+                            setDirImage(new Image(response.data));
+                            setHasDirImage(true);
+                        }
+                    } catch (e) {
+                        setHasDirImage(false);
+                    }
+                }, (error) => {
+                    setHasDirImage(false);
+                })
+        }
+        if (film.title !== "") {
+            getImage();
+        }
+
+    },[film])
 
     React.useEffect(() => {
         const getFilm = () => {
@@ -204,6 +238,10 @@ const FilmView = () => {
             }
             <h1>{film.title} ({film.ageRating}) ({genre})</h1>
             <h2>by {film.directorFirstName} {film.directorLastName}</h2>
+            { hasDirImage && dirImage instanceof Image ?
+                <img src={dirImage?.getSource()} style={smallImageStyle} alt={film.title + " hero image"}/>:
+                <img src={require("../images/profile.jpg")} style={smallImageStyle} alt={film.title + " hero image"}/>
+            }
             <h2>date of release {getDateString()}</h2>
             <h2>run time {film.runtime}</h2>
             <h2>average rating {film.rating}, number of ratings {numberOfRatings}</h2>
