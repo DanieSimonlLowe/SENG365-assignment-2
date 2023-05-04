@@ -51,7 +51,6 @@ const RegisterPage = () => {
                     setHasError(true);
                     setErrorMessage("failed to login")
                 }).then((r) => {
-                    console.log(token + " " + fileType);
                     if (token === "" || fileType === "" || image === undefined || image === null) {
                         return;
                     }
@@ -76,9 +75,9 @@ const RegisterPage = () => {
             }
         }, (error) => {
             setHasError(true);
-            if (error.status === 400) {
+            if (error.response.status === 400) {
                 setErrorMessage("invalid registration input")
-            } else if (error.status === 403) {
+            } else if (error.response.status === 403) {
                 setErrorMessage("email already in use.")
             } else {
                 setErrorMessage("Internal Server Error")
