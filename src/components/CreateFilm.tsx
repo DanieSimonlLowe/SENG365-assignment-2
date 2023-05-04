@@ -20,6 +20,7 @@ import useStore from "../store";
 import ImageEditor from "./ImageEditor";
 import Image from "../classes/images";
 import dayjs ,{Dayjs} from "dayjs";
+import {useNavigate} from "react-router-dom";
 
 const CreateFilm = () => {
     const [title, setTitle] = React.useState("");
@@ -57,7 +58,7 @@ const CreateFilm = () => {
     const changeDate = (date:(Dayjs|null)) => {
         if (date === null) {
             return;
-        } else if(!isNaN(date.valueOf()) && date.isAfter(now)) {
+        } else if(!isNaN(date.valueOf())) {
             setDate(date);
         }
     }
@@ -94,6 +95,7 @@ const CreateFilm = () => {
         return tempDate.getFullYear() + '-' + toTwoDigit(tempDate.getMonth()+1) + '-' + toTwoDigit(tempDate.getDate()) + ' ' + toTwoDigit(tempDate.getHours()) + ':' + toTwoDigit(tempDate.getMinutes()) + ':' + toTwoDigit(tempDate.getSeconds());
     }
 
+    const navigate = useNavigate();
     const submit = () => {
         if (title === "" || description === "" || fileType === "" || image === undefined) {
             setHasError(true);
@@ -144,6 +146,7 @@ const CreateFilm = () => {
                     'content-type': fileType
                 }}).then((response) => {
                     setHasError(false);
+                    navigate("/film/"+id);
                 },
                 (error) => {
                     setErrorMessage("failed to upload image, but rest of the film went though");

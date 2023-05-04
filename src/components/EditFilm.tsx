@@ -17,7 +17,7 @@ import React from "react";
 import {Genre} from "../types/genres";
 import axios from "axios";
 import useStore from "../store";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import dayjs ,{Dayjs} from "dayjs";
 import Image from "../classes/images";
 import ImageEditor from "./ImageEditor";
@@ -145,7 +145,7 @@ const EditFilm = () => {
     const changeDate = (date:(Dayjs|null)) => {
         if (date === null) {
             return;
-        } else if(!isNaN(date.valueOf()) && date.isAfter(now)) {
+        } else if(!isNaN(date.valueOf())) {
             setDate(date);
         }
     }
@@ -190,6 +190,7 @@ const EditFilm = () => {
         }
     }
 
+    const navigate = useNavigate();
     const submit = () => {
         if (film === undefined) {
             setHasError(true);
@@ -222,6 +223,8 @@ const EditFilm = () => {
         if (ageRating !== film.ageRating) {
             data.ageRating = ageRating;
         }
+        let errorFlag = false;
+
         if (Object.keys(data).length !== 0) {
             axios.patch(API_URL + "films/" + id, data, {
                 headers: {
@@ -230,6 +233,7 @@ const EditFilm = () => {
             }).then((response) => {
                 setHasError(false);
             }, (error) => {
+                errorFlag = true;
                 const status: number = error.response.status;
                 setHasError(true);
                 if (status === 400) {
@@ -245,20 +249,25 @@ const EditFilm = () => {
                 }
             })
         }
-        if (fileType === "" || image === undefined || image === null || image === oldImage) {
-            return;
+        if (fileType !== "" && image !== undefined && image !== null && image !== oldImage) {
+            axios.put(API_URL+"films/"+id+"/image",image.data, {
+                headers: {
+                    'X-Authorization': token,
+                    'content-type': fileType
+                }}).then((response) => {
+                    setHasError(false);
+                },
+                (error) => {
+                    errorFlag = true
+                    setErrorMessage("failed to upload image, but rest of the film went though");
+                    setHasError(true);
+                })
         }
-        axios.put(API_URL+"films/"+id+"/image",image.data, {
-            headers: {
-                'X-Authorization': token,
-                'content-type': fileType
-            }}).then((response) => {
-                setHasError(false);
-            },
-            (error) => {
-                setErrorMessage("failed to upload image, but rest of the film went though");
-                setHasError(true);
-            })
+        if (!errorFlag) {
+            navigate("/film/"+id);
+        }
+
+
     }
 
     return (
