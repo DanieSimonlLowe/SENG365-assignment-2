@@ -91,7 +91,20 @@ const UserEdit = () => {
                     setHasError(true);
                 });
         }
-
+        if (oldImage !== undefined && image === undefined) {
+            axios.delete(API_URL+"users/"+userId+"/image", {
+                headers: {
+                    'X-Authorization': token,
+                }}).then((response) => {
+                    setHasError(false);
+                },
+                (error) => {
+                    if (!hasError) {
+                        setErrorMessage("failed to delete image, but rest of the film went though");
+                    }
+                    setHasError(true);
+                });
+        }
 
         let data: { [id:string] : (string|number); } = {};
         if (oldEmail !== email) {

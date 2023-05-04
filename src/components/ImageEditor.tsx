@@ -9,7 +9,7 @@ import {VALID_IMAGE_FILE_TYPES} from "../Constantes";
 
 interface imageProps {
     image: Image|undefined,
-    setImage: (i: Image) => void
+    setImage: (i: (Image|undefined)) => void
 
     setFileType: (f: string) => void
 
@@ -18,7 +18,7 @@ interface imageProps {
 
 const ImageEditor = (props: imageProps ) => {
     const image: (Image|undefined) = props.image;
-    const setImage: (i: Image) => void = props.setImage;
+    const setImage: (i: Image|undefined) => void = props.setImage;
     const setFileType: (f: string) => void = props.setFileType;
 
     const [uploading, setUploading] = React.useState(false);
@@ -78,6 +78,12 @@ const ImageEditor = (props: imageProps ) => {
         }
     }
 
+    const deleteImage = () => {
+        setImage(undefined);
+        setHasError(false);
+        setFileType("");
+    }
+
     return (
         <div>
             <Button
@@ -86,13 +92,15 @@ const ImageEditor = (props: imageProps ) => {
             >
                 {get_image()}
                 <br/>
-                <span>Upload File</span>
                 <input
                     type="file"
                     hidden
                     accept="image/jpeg,image/png,image/gif"
                     onChange={getImage}
                 />
+            </Button>
+            <Button onClick={deleteImage}>
+                Delete Film.
             </Button>
             {hasError?
                 <Alert severity="error">{errorMessage}</Alert>:""
