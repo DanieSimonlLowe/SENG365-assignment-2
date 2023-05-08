@@ -197,6 +197,11 @@ const EditFilm = () => {
             setErrorMessage("the film is not loaded.")
             return;
         }
+        if (title === "" || description === "" || fileType === "" || image === undefined || !hasImage) {
+            setHasError(true);
+            setErrorMessage("you must provide an title, image and description.");
+            return;
+        }
         let data: { [id:string] : (string|number); } = {};
         // @ts-ignore
         if (title !== film.title) {

@@ -31,7 +31,7 @@ const UserView = () => {
                 })
         }
         getUser();
-    }, [userId])
+    }, [userId,token])
 
     React.useEffect(() => {
         const getImage = () => {

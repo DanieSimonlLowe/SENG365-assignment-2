@@ -21,8 +21,8 @@ const DeleteFilm = () => {
             .then((response) => {
 
             }, (error) => {
-                setHasError(true);
                 error = true;
+                setHasError(true);
             }).then((r) => {
                 if (error) {
                     return;

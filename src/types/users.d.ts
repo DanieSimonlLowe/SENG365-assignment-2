@@ -7,6 +7,6 @@ type User = {
     last_name: string,
     image: Image,
     /**
-     * no reson to store password or auth_token localy in user.
+     * no reason to store password or auth_token locally in user.
      * */
 }

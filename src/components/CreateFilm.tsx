@@ -25,7 +25,6 @@ import {useNavigate} from "react-router-dom";
 const CreateFilm = () => {
     const [title, setTitle] = React.useState("");
     const [description, setDescription] = React.useState("");
-    const now = dayjs(new Date());
     const [date, setDate] = React.useState<Dayjs|null>(null);
     const [runtime, setRuntime] = React.useState("");
     const [ageRating, setAgeRating] = React.useState('TBC');
