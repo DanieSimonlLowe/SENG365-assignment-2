@@ -26,7 +26,7 @@ const ImageEditor = (props: imageProps ) => {
     const [errorMessage, setErrorMessage] = React.useState("");
 
     const imageStyle: CSS.Properties = {
-        maxHeight: "40vh"
+        maxHeight: "30vh"
     }
 
     const get_image = () => {

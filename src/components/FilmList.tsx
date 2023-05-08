@@ -15,7 +15,7 @@ import {
     Button,
     MenuItem,
     Select,
-    SelectChangeEvent
+    SelectChangeEvent, Box
 } from "@mui/material";
 import {Link} from "react-router-dom";
 import FilmListObject from "./FilmListObject"
@@ -361,6 +361,7 @@ const FilmList = () => {
 
     return (
         <div>
+            <Box sx={{height:15}}/>
             <TextField label="Search" variant="outlined"
                        defaultValue={query}
                        id="films_query_input"

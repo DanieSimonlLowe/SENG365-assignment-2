@@ -1,5 +1,6 @@
 import CSS from "csstype";
 import {
+    Box,
     Paper,
 } from "@mui/material";
 import React from "react";
@@ -230,6 +231,7 @@ const FilmView = () => {
 
     return (
         <div>
+            <Box sx={{height:15}}/>
             {filmLoaded?
         <div>
             { hasImage && filmImage instanceof Image ?
