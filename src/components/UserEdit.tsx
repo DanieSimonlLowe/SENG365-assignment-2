@@ -5,6 +5,7 @@ import useStore from "../store";
 import {Alert, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Stack, Box} from "@mui/material";
 import ImageEditor from "./ImageEditor";
 import Image from "../classes/images"
+import {useNavigate} from "react-router-dom";
 
 const UserEdit = () => {
     const userId = useStore(state => state.userId);
@@ -74,37 +75,9 @@ const UserEdit = () => {
         getImage()
     },[userId])
 
-
+    const navigate = useNavigate();
     const submit = () => {
-        if (fileType !== "" && image !== undefined && image !== null && image !== oldImage) {
-            axios.put(API_URL+"users/"+userId+"/image",image.data, {
-                headers: {
-                    'X-Authorization': token,
-                    'content-type': fileType
-                }}).then((response) => {
-                    setHasError(false);
-                },
-                (error) => {
-                    if (!hasError) {
-                        setErrorMessage("failed to upload image, but rest of the film went though");
-                    }
-                    setHasError(true);
-                });
-        }
-        if (oldImage !== undefined && image === undefined) {
-            axios.delete(API_URL+"users/"+userId+"/image", {
-                headers: {
-                    'X-Authorization': token,
-                }}).then((response) => {
-                    setHasError(false);
-                },
-                (error) => {
-                    if (!hasError) {
-                        setErrorMessage("failed to delete image, but rest of the film went though");
-                    }
-                    setHasError(true);
-                });
-        }
+        let reqests: Array<Promise<any>> = [];
 
         let data: { [id:string] : (string|number); } = {};
         if (oldEmail !== email) {
@@ -133,6 +106,7 @@ const UserEdit = () => {
                 if (hasPassword) {
                     data.currentPassword = dialogPassword;
                 }
+                reqests.push(
                 axios.patch(API_URL+"users/"+userId, data, {headers: {
                         'X-Authorization': token
                     }}).then((response) => {
@@ -152,6 +126,11 @@ const UserEdit = () => {
                         setErrorMessage("can't find you in the database.")
                     } else {
                         setErrorMessage("a server error.")
+                    }
+                }));
+                Promise.all(reqests).then(() => {
+                    if (!hasError) {
+                        navigate("/profile");
                     }
                 })
             }
@@ -177,7 +156,37 @@ const UserEdit = () => {
         } else {
             setTimeout(runPatch,0);
         }
-
+        if (fileType !== "" && image !== undefined && image !== null && image !== oldImage) {
+            reqests.push(
+            axios.put(API_URL+"users/"+userId+"/image",image.data, {
+                headers: {
+                    'X-Authorization': token,
+                    'content-type': fileType
+                }}).then((response) => {
+                    setHasError(false);
+                },
+                (error) => {
+                    if (!hasError) {
+                        setErrorMessage("failed to upload image, but rest of the film went though");
+                    }
+                    setHasError(true);
+                }));
+        }
+        if (oldImage !== undefined && image === undefined) {
+            reqests.push(
+            axios.delete(API_URL+"users/"+userId+"/image", {
+                headers: {
+                    'X-Authorization': token,
+                }}).then((response) => {
+                    setHasError(false);
+                },
+                (error) => {
+                    if (!hasError) {
+                        setErrorMessage("failed to delete image, but rest of the film went though");
+                    }
+                    setHasError(true);
+                }));
+        }
     }
 
     return (
