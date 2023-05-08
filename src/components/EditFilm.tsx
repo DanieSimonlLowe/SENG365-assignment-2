@@ -230,7 +230,9 @@ const EditFilm = () => {
         }
         let errorFlag = false;
 
+        let reqests: Array<Promise<any>> = [];
         if (Object.keys(data).length !== 0) {
+            reqests.push(
             axios.patch(API_URL + "films/" + id, data, {
                 headers: {
                     'X-Authorization': token
@@ -252,9 +254,10 @@ const EditFilm = () => {
                 } else {
                     setErrorMessage("an internal server error has occurred.")
                 }
-            })
+            }))
         }
         if (fileType !== "" && image !== undefined && image !== null && image !== oldImage) {
+            reqests.push(
             axios.put(API_URL+"films/"+id+"/image",image.data, {
                 headers: {
                     'X-Authorization': token,
@@ -266,12 +269,14 @@ const EditFilm = () => {
                     errorFlag = true
                     setErrorMessage("failed to upload image, but rest of the film went though");
                     setHasError(true);
-                })
+                }))
         }
-        if (!errorFlag) {
-            navigate("/film/"+id);
-        }
+        Promise.all(reqests).then(() => {
+            if (!errorFlag) {
 
+                navigate("/film/"+id);
+            }
+        })
 
     }
 
