@@ -256,6 +256,8 @@ const FilmView = () => {
                 </div>
             </Paper> : ""
             }
+            <br/><br/><br/>
+            <h1>similar films.</h1>
             {similarFilms.length > 0?
                 <Paper elevation={3} style={cardStyle}>
                     <div style={{display: "inline-block", maxWidth: "965", minWidth: "320"}}>
