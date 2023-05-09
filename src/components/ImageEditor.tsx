@@ -100,7 +100,7 @@ const ImageEditor = (props: imageProps ) => {
                 />
             </Button>
             <Button onClick={deleteImage}>
-                Delete Film.
+                Delete.
             </Button>
             {hasError?
                 <Alert severity="error">{errorMessage}</Alert>:""
