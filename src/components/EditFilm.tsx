@@ -197,7 +197,7 @@ const EditFilm = () => {
             setErrorMessage("the film is not loaded.")
             return;
         }
-        if (title === "" || description === "" || fileType === "" || image === undefined || !hasImage) {
+        if (title === "" || description === "" || fileType === "" || image === undefined) {
             setHasError(true);
             setErrorMessage("you must provide an title, image and description.");
             return;
