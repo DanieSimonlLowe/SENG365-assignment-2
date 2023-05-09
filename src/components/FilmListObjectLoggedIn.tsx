@@ -7,6 +7,7 @@ import axios from "axios";
 import Image from "../classes/images";
 import {Link, useNavigate} from 'react-router-dom'
 import {Genre} from "../types/genres";
+import DirectorImage from "./DirectorImage";
 interface  IFilmProps {
     film: Film,
     genres: Array<Genre>
@@ -111,7 +112,9 @@ const FilmListObjectLoggedIn = (props: IFilmProps) => {
                 <CardContent>
                     <div>
                         <Typography variant="h3" component="h3">{film.title}</Typography>
+                        <DirectorImage dirId={film.directorId}/>
                         <Typography variant="h4" component="h4">{"by "+film.directorFirstName+" "+film.directorLastName}</Typography>
+                        <br/><br/>
                         <Typography variant="h5" component="h5">{"age rating "+film.ageRating+" genre: "+getGenre(film.genreId)+" released on: "+ filmDate +" rated: "+film.rating}</Typography>
                         <Typography variant="body1">{film.description}</Typography>
                     </div>
