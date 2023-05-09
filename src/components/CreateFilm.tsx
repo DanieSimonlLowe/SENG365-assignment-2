@@ -122,7 +122,6 @@ const CreateFilm = () => {
                 'X-Authorization': token
         }}).then((response) => {
             id = response.data.filmId;
-            setHasError(false);
         }, (error) => {
             const status: number = error.response.status;
             setHasError(true);
@@ -144,7 +143,6 @@ const CreateFilm = () => {
                     'X-Authorization': token,
                     'content-type': fileType
                 }}).then((response) => {
-                    setHasError(false);
                     navigate("/film/"+id);
                 },
                 (error) => {
