@@ -91,6 +91,7 @@ const UserEdit = () => {
         }
 
         let hasPassword = false;
+        let errorFlag = false;
 
         const waitForOpen = async () => {
             if (openRef.current) {
@@ -112,6 +113,7 @@ const UserEdit = () => {
                     }}).then((response) => {
                     setHasError(false);
                 }, (error) => {
+                    errorFlag = true;
                     setHasError(true);
                     const status: number = error.response.status;
                     if (status === 400) {
@@ -124,12 +126,14 @@ const UserEdit = () => {
                         }
                     } else if (status === 404) {
                         setErrorMessage("can't find you in the database.")
+                    } else if (status === 403) {
+                        setErrorMessage("that email already exists.")
                     } else {
-                        setErrorMessage("a server error.")
+                        setErrorMessage("a server error occurred.")
                     }
                 }));
                 Promise.all(reqests).then(() => {
-                    if (!hasError) {
+                    if (!errorFlag) {
                         navigate("/profile");
                     }
                 })
@@ -166,6 +170,7 @@ const UserEdit = () => {
                     setHasError(false);
                 },
                 (error) => {
+                    errorFlag = true;
                     if (!hasError) {
                         setErrorMessage("failed to upload image, but rest of the film went though");
                     }
@@ -181,6 +186,7 @@ const UserEdit = () => {
                     setHasError(false);
                 },
                 (error) => {
+                    errorFlag = true;
                     if (!hasError) {
                         setErrorMessage("failed to delete image, but rest of the film went though");
                     }
